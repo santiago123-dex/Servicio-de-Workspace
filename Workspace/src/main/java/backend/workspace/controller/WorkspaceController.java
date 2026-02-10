@@ -47,15 +47,8 @@ public class WorkspaceController {
 
     @PostMapping("/create")
     public ResponseEntity<WorkspaceResponse> createWorkspace(@RequestBody WorkspaceRequest workspaceRequest){
-        try {
-            log.info("Recibiendo request: {}", workspaceRequest);
             WorkspaceResponse response = workspaceService.createWorkspace(workspaceRequest);
-            log.info("Workspace creado exitosamente");
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("Error al crear workspace", e);
-            throw e;
-        }
     }
 
     @GetMapping("/getAllWorkspaces")
