@@ -38,24 +38,25 @@ public class Workspace {
     @Column(name = "status", nullable = false)
     private WorkspaceStatus status;
 
-    public enum WorkspaceStatus{
+    public enum WorkspaceStatus {
         BORRADOR,
         ACTIVO,
         ARCHIVADO;
 
         //Devuelve el nombre del enum para representarlo en JSON de salida
         @JsonValue
-        public String getName(){
+        public String getName() {
             return this.name();
         }
 
         //Recibe el valor de json y lo convierte a mayuscula para que coincida con el enum
         @JsonCreator
-        public static WorkspaceStatus fromString(String value){
+        public static WorkspaceStatus fromString(String value) {
             return WorkspaceStatus.valueOf(value.toUpperCase());
         }
     }
 
+    // el jackson es el encargado de convertir el json a map
     //Recibe el json y lo almacena como map antes de guardarlo en la base de datos
     //todo lo que es conversion lo hace hibernate osea de map a Jsonb o de jsonb a map
 
@@ -67,7 +68,7 @@ public class Workspace {
     private OffsetDateTime createdAt;
 
     @PrePersist
-    public void prePersist(){
+    public void prePersist() {
         this.createdAt = OffsetDateTime.now();
     }
 

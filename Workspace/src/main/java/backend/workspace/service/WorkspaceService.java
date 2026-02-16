@@ -3,26 +3,30 @@ package backend.workspace.service;
 import backend.workspace.dto.Workspace.WorkspaceRequest;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
 import backend.workspace.entity.Workspace;
-import backend.workspace.exception.Exceptions;
+import backend.workspace.exception.InvalidWorkspaceException;
+import backend.workspace.exception.WorkspaceNotFoundException;
 import backend.workspace.repository.WorkspaceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 public class WorkspaceService {
 
     private final WorkspaceRepository workspaceRepository;
+    private final WorkspaceMemberService workspaceMemberService;
 
-    public WorkspaceService(WorkspaceRepository workspaceRepository) {
+    public WorkspaceService(WorkspaceRepository workspaceRepository, WorkspaceMemberService workspaceMemberService) {
         this.workspaceRepository = workspaceRepository;
+        this.workspaceMemberService = workspaceMemberService;
+
     }
 
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) {
 
         if(workspaceRequest.getStatus() == Workspace.WorkspaceStatus.ARCHIVADO){
-            throw new IllegalArgumentException("No se puede crear el workspace en estado ARCHIVADO");
+            throw new InvalidWorkspaceException("No se puede crear el workspace en estado ARCHIVADO");
         }
 
         Workspace workspace = Workspace.builder()
@@ -32,7 +36,9 @@ public class WorkspaceService {
                 .data(workspaceRequest.getData())
                 .ownerUserID(1)
                 .build();
-        workspaceRepository.save(workspace);
+        Workspace saved = workspaceRepository.save(workspace);
+
+        workspaceMemberService.addOwnerAsAdmin(saved.getId(), saved.getOwnerUserID());
 
         return new WorkspaceResponse(workspace.getName(), workspace.getDescription(), workspace.getStatus(), "Workspace creado", workspace.getData());
     }
@@ -41,19 +47,19 @@ public class WorkspaceService {
         List<Workspace> workspaces = workspaceRepository.findAll();
         return workspaces.stream()
                 .map(workspace -> new WorkspaceResponse(workspace.getName(), workspace.getDescription(), workspace.getStatus(), "Workspaces encontrados", workspace.getData()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public WorkspaceResponse getWorkspaceById(Integer id){
         Workspace workspace = workspaceRepository.findById(id)
-                .orElseThrow(() -> new Exceptions(id));
+                .orElseThrow(() -> new WorkspaceNotFoundException(id));
 
         return new WorkspaceResponse(workspace.getName(), workspace.getDescription(), workspace.getStatus(), "Workspace encontrado", workspace.getData());
     }
 
     public WorkspaceResponse updateWorkspace(Integer id, WorkspaceRequest workspaceRequest){
         Workspace workspace = workspaceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Workspace Not found"));
+                .orElseThrow(() -> new WorkspaceNotFoundException(id));
 
         workspace.setName(workspaceRequest.getName());
         workspace.setDescription(workspaceRequest.getDescription());
@@ -67,7 +73,7 @@ public class WorkspaceService {
 
     public void deleteWorkspace(Integer id){
         Workspace workspace = workspaceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Workspace Not found"));
+                .orElseThrow(() -> new WorkspaceNotFoundException(id));
         workspaceRepository.delete(workspace);
     }
 
