@@ -12,6 +12,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -26,7 +27,7 @@ public class Workspace {
     private Integer id;
 
     @Column(name = "owner_user_id", nullable = false)
-    private Integer ownerUserID;
+    private UUID ownerUserID;
 
     @Column(name = "name", nullable = false)
     private String name;

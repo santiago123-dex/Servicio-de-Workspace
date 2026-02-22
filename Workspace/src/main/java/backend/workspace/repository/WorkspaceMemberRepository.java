@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember, Integer> {
 
@@ -12,15 +13,18 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     List<WorkspaceMember> findByWorkspaceId(Integer workspaceId);
 
     //Busca todos los workspaces de un usuario
-    List<WorkspaceMember> findByUserId(Integer userId);
+    List<WorkspaceMember> findByUserId(UUID userId);
 
     // Verifica si existe un miembro en un workspace
-    boolean existsByWorkspaceIdAndUserId(Integer workspaceId, Integer userId);
+    boolean existsByWorkspaceIdAndUserId(Integer workspaceId, UUID userId);
 
     // Busca un miembro por workspaceId y userId, y trae la informacion del miembro
-    Optional<WorkspaceMember>  findByWorkspaceIdAndUserId(Integer workspaceId, Integer userId);
+    Optional<WorkspaceMember>  findByWorkspaceIdAndUserId(Integer workspaceId, UUID userId);
 
     // Cuenta la cantidad de miembros de un workspace
     Long countByWorkspaceId(Integer workspaceId);
+
+    // Elimina todos los miembros de un workspace
+    void deleteMembersByWorkspaceId(Integer workspaceId);
 
 }

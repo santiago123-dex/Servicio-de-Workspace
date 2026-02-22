@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -23,7 +25,7 @@ public class WorkspaceMember {
     private Integer id;
 
     @Column(name = "user_id", nullable = true)
-    private Integer userId;
+    private UUID userId;
 
     @Column(name = "workspace_id", nullable = false)
     private Integer workspaceId;

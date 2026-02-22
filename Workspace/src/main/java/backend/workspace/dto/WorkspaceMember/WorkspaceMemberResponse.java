@@ -2,10 +2,12 @@ package backend.workspace.dto.WorkspaceMember;
 
 import backend.workspace.entity.WorkspaceMember;
 
+import java.util.UUID;
+
 public record WorkspaceMemberResponse(
     Integer id,
     Integer workspaceId,
-    Integer userId,
+    UUID userId,
     WorkspaceMember.Role role,
     String message
 ) {

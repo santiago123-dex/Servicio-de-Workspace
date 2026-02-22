@@ -5,10 +5,14 @@ import backend.workspace.dto.Workspace.WorkspaceResponse;
 import backend.workspace.entity.Workspace;
 import backend.workspace.exception.InvalidWorkspaceException;
 import backend.workspace.exception.WorkspaceNotFoundException;
+
 import backend.workspace.repository.WorkspaceRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
+
 
 
 @Service
@@ -25,57 +29,87 @@ public class WorkspaceService {
 
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) {
 
-        if(workspaceRequest.getStatus() == Workspace.WorkspaceStatus.ARCHIVADO){
-            throw new InvalidWorkspaceException("No se puede crear el workspace en estado ARCHIVADO");
-        }
+        validateWorkspaceCreation(workspaceRequest);
 
-        Workspace workspace = Workspace.builder()
-                .name(workspaceRequest.getName())
-                .description(workspaceRequest.getDescription())
-                .status(workspaceRequest.getStatus())
-                .data(workspaceRequest.getData())
-                .ownerUserID(1)
-                .build();
+        UUID currentUserId = getCurrentUserId();
+
+        Workspace workspace = buildWorkspace(workspaceRequest, currentUserId);
         Workspace saved = workspaceRepository.save(workspace);
 
         workspaceMemberService.addOwnerAsAdmin(saved.getId(), saved.getOwnerUserID());
 
-        return new WorkspaceResponse(workspace.getName(), workspace.getDescription(), workspace.getStatus(), "Workspace creado", workspace.getData());
+        return WorkspaceResponse.fromEntity(saved, "Workspace creado correctamente");
     }
 
     public List<WorkspaceResponse> getAllWorkspaces() {
         List<Workspace> workspaces = workspaceRepository.findAll();
         return workspaces.stream()
-                .map(workspace -> new WorkspaceResponse(workspace.getName(), workspace.getDescription(), workspace.getStatus(), "Workspaces encontrados", workspace.getData()))
+                .map(workspace -> WorkspaceResponse.fromEntity(workspace, "Workspaces obtenidos correctamente"))
                 .toList();
     }
 
-    public WorkspaceResponse getWorkspaceById(Integer id){
+    public WorkspaceResponse getWorkspaceById(Integer id) {
         Workspace workspace = workspaceRepository.findById(id)
                 .orElseThrow(() -> new WorkspaceNotFoundException(id));
 
-        return new WorkspaceResponse(workspace.getName(), workspace.getDescription(), workspace.getStatus(), "Workspace encontrado", workspace.getData());
+        return WorkspaceResponse.fromEntity(workspace, "Workspace obtenido correctamente");
     }
 
-    public WorkspaceResponse updateWorkspace(Integer id, WorkspaceRequest workspaceRequest){
-        Workspace workspace = workspaceRepository.findById(id)
-                .orElseThrow(() -> new WorkspaceNotFoundException(id));
+    public WorkspaceResponse updateWorkspace(Integer id, WorkspaceRequest workspaceRequest) {
 
-        workspace.setName(workspaceRequest.getName());
-        workspace.setDescription(workspaceRequest.getDescription());
-        workspace.setStatus(workspaceRequest.getStatus());
-        workspace.setData(workspaceRequest.getData());
+        Workspace workspace = findWorkspaceById(id);
+        updateWorkspaceFields(workspace, workspaceRequest);
 
         workspaceRepository.save(workspace);
 
-        return new WorkspaceResponse(workspace.getName(), workspace.getDescription(), workspace.getStatus(), "Workspace actualizado", workspace.getData());
+        return WorkspaceResponse.fromEntity(workspace, "Workspace Actulizado");
     }
 
-    public void deleteWorkspace(Integer id){
-        Workspace workspace = workspaceRepository.findById(id)
-                .orElseThrow(() -> new WorkspaceNotFoundException(id));
+    @Transactional
+    public void deleteWorkspace(Integer id) {
+        Workspace workspace = findWorkspaceById(id);
+
+        // Eliminar todos los miembros del workspace incluyendo el dueño
+        workspaceMemberService.deleteAllMembersByWorkspace(id);
+
+        // Eliminar el workspace
         workspaceRepository.delete(workspace);
     }
+
+    // Metodos privados
+
+    private void validateWorkspaceCreation(WorkspaceRequest request){
+        if (request.status() == Workspace.WorkspaceStatus.ARCHIVADO){
+            throw new InvalidWorkspaceException("No se puede crear el workspace en estado ARCHIVADO");
+        }
+    }
+
+    private Workspace buildWorkspace(WorkspaceRequest request, UUID currenteUserId){
+        return Workspace.builder()
+                .name(request.name())
+                .description(request.description())
+                .status(request.status())
+                .data(request.data())
+                .ownerUserID(currenteUserId)
+                .build();
+    }
+
+    private UUID getCurrentUserId(){
+        return UUID.fromString("00000000-0000-0000-0000-000000000001");
+    }
+
+    private Workspace findWorkspaceById(Integer id){
+        return workspaceRepository.findById(id)
+                .orElseThrow(() -> new WorkspaceNotFoundException(id));
+    }
+
+    private void updateWorkspaceFields(Workspace workspace, WorkspaceRequest workspaceRequest){
+        workspace.setName(workspaceRequest.name());
+        workspace.setDescription(workspaceRequest.description());
+        workspace.setStatus(workspaceRequest.status());
+        workspace.setData(workspaceRequest.data());
+    }
+
 
 
 }

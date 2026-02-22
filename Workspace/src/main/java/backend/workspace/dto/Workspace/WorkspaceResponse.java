@@ -1,24 +1,28 @@
 package backend.workspace.dto.Workspace;
 
 import backend.workspace.entity.Workspace;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.OffsetDateTime;
 import java.util.Map;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class WorkspaceResponse {
 
-    private String name;
-    private String description;
-    private Workspace.WorkspaceStatus status;
-    private String message;
-    private Map<String, Object> data;
+public record WorkspaceResponse(
+
+
+     Integer id,
+     String name,
+     String description,
+     Workspace.WorkspaceStatus status,
+     String message,
+     Map<String, Object> data
+) {
+    public static WorkspaceResponse fromEntity(Workspace workspace, String message){
+        return new WorkspaceResponse(
+        workspace.getId(),
+        workspace.getName(),
+        workspace.getDescription(),
+        workspace.getStatus(),
+        message,
+        workspace.getData()
+        );
+    }
 
 }

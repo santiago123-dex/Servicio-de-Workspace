@@ -1,8 +1,10 @@
 package backend.workspace.exception;
 
+import java.util.UUID;
+
 public class MemberAlreadyExistException extends RuntimeException{
 
-    public MemberAlreadyExistException(Integer userId, Integer WorkspaceId){
+    public MemberAlreadyExistException(UUID userId, Integer WorkspaceId){
         super("El usuario " + userId + " ya pertenece al workspace " + WorkspaceId);
     }
 

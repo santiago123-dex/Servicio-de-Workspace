@@ -3,6 +3,8 @@ package backend.workspace.controller;
 import backend.workspace.dto.Workspace.WorkspaceRequest;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
 import backend.workspace.service.WorkspaceService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
@@ -13,14 +15,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/workspaces")
+@RequiredArgsConstructor
 @Slf4j
+//En este controller usamos el valid para activar las validaciones que tiene los dtos
 public class WorkspaceController {
 
     private final WorkspaceService workspaceService;
-
-    public WorkspaceController(WorkspaceService workspaceService) {
-        this.workspaceService = workspaceService;
-    }
 
     @PostMapping("/test-string")
     public ResponseEntity<String> testString(@RequestBody String jsonString) {
@@ -46,7 +46,7 @@ public class WorkspaceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<WorkspaceResponse> createWorkspace(@RequestBody WorkspaceRequest workspaceRequest){
+    public ResponseEntity<WorkspaceResponse> createWorkspace(@Valid @RequestBody WorkspaceRequest workspaceRequest){
             WorkspaceResponse response = workspaceService.createWorkspace(workspaceRequest);
             return ResponseEntity.ok(response);
     }
@@ -71,7 +71,7 @@ public class WorkspaceController {
     }
 
     @PutMapping("/updateWorkspace/{id}")
-    public ResponseEntity<WorkspaceResponse> updateWorkspace(@PathVariable Integer id, @RequestBody WorkspaceRequest request){
+    public ResponseEntity<WorkspaceResponse> updateWorkspace(@PathVariable Integer id, @Valid @RequestBody WorkspaceRequest request){
         return ResponseEntity.ok(workspaceService.updateWorkspace(id, request));
     }
 
