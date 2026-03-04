@@ -1,4 +1,4 @@
-package backend.workspace.exception;
+package backend.workspace.exception.WorkspaceMember;
 
 public class MemberNotFoundException extends RuntimeException{
 

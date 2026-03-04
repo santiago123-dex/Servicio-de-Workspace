@@ -1,4 +1,4 @@
-package backend.workspace.exception;
+package backend.workspace.exception.Workspace;
 
 public class WorkspaceNotFoundException extends RuntimeException{
 

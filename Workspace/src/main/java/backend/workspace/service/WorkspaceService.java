@@ -3,8 +3,8 @@ package backend.workspace.service;
 import backend.workspace.dto.Workspace.WorkspaceRequest;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
 import backend.workspace.entity.Workspace;
-import backend.workspace.exception.InvalidWorkspaceException;
-import backend.workspace.exception.WorkspaceNotFoundException;
+import backend.workspace.exception.Workspace.InvalidWorkspaceException;
+import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
 
 import backend.workspace.repository.WorkspaceRepository;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class WorkspaceService {
         this.workspaceMemberService = workspaceMemberService;
 
     }
-
+    @Transactional
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) {
 
         validateWorkspaceCreation(workspaceRequest);
@@ -67,6 +67,8 @@ public class WorkspaceService {
 
     @Transactional
     public void deleteWorkspace(Integer id) {
+        // Se usa el find porque antes de borrar el workspace toca borrar los usuarios y las tareas
+        //Osea que depende de otros para ser borrada
         Workspace workspace = findWorkspaceById(id);
 
         // Eliminar todos los miembros del workspace incluyendo el dueño

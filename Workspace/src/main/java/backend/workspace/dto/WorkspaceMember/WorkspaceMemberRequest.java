@@ -12,7 +12,9 @@ public record WorkspaceMemberRequest (
 
         @NotNull(message = "El workspaceId es obligatorio")
         Integer workspaceId,
+        @NotNull(message = "El userId debe de ser obligatorio")
         UUID userId,
+        @NotNull(message = "El rol debe de ser obligatorio")
         WorkspaceMember.Role role
 
 ){}

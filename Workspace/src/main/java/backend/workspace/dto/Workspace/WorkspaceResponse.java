@@ -5,8 +5,6 @@ import java.util.Map;
 
 
 public record WorkspaceResponse(
-
-
      Integer id,
      String name,
      String description,
