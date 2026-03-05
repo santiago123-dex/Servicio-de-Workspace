@@ -45,7 +45,7 @@ public class SubmissionService {
         // diferente a la original asi que con esta garantizamos que usamos la version persistida
         Submission saved = submissionRepository.save(submission);
 
-        return  SubmissionResponse.fromEntity(saved);
+        return SubmissionResponse.fromEntity(saved);
     }
 
     public List<SubmissionResponse> getSubmissionsByAssignment(Integer assignmentId) {
@@ -59,7 +59,7 @@ public class SubmissionService {
     }
 
     // Devuelve la lista de tareas que ha enviado un usuario en especifico
-    public List<SubmissionResponse> getSubmissionByUser(Integer userId){
+    public List<SubmissionResponse> getSubmissionByUser(Integer userId) {
 
         return submissionRepository.findByUserId(userId)
                 .stream()
@@ -67,7 +67,8 @@ public class SubmissionService {
                 .toList();
     }
 
-    public SubmissionResponse getSubmissionById(Integer id){
+    //Devuelve la lista de tareas dependiendo del id
+    public SubmissionResponse getSubmissionById(Integer id) {
 
         // Obtiene la entidad Submission correspondiente al id desde la base de datos.
         // Si no existe, el métod findSubmissionOrThrow lanza una excepción.
@@ -76,24 +77,55 @@ public class SubmissionService {
 
     }
 
+    //Update Submission
+    @Transactional
+    public SubmissionResponse updateSubmission(Integer id, SubmissionRequest request) {
+
+        Submission submission = findSubmissionOrThrow(id);
+
+        Assignment assignment = validateAssignmentExists(submission.getAssignmentId());
+
+        submission.setContent(request.content());
+        submission.setFiles(request.files());
+
+        Submission updated = submissionRepository.save(submission);
+
+        return SubmissionResponse.fromEntity(updated);
+
+    }
+
+    public void deleteSubmission(Integer id){
+
+        if (!submissionRepository.existsById(id)){
+            throw new SubmissionNotFoundException(id);
+        }
+
+        submissionRepository.deleteById(id);
+    }
+
     // Metodos privados
-    private Assignment validateAssignmentExists(Integer id){
+
+    // Valida que exista la tarea
+    private Assignment validateAssignmentExists(Integer id) {
         return assignmentRepository.findById(id)
                 .orElseThrow(() -> new AssignmentNotFoundException(id));
     }
 
-    private void validateAssignmentNotExpired(Assignment assignment){
-        if(assignment.getDueDate().isBefore(OffsetDateTime.now()) || assignment.getStatus() == Assignment.AssignmentStatus.CERRADO){
+    // verifica que no haya expirado la enviada
+    private void validateAssignmentNotExpired(Assignment assignment) {
+        if (assignment.getDueDate().isBefore(OffsetDateTime.now()) || assignment.getStatus() == Assignment.AssignmentStatus.CERRADO) {
             throw new AssignmentExpiredException(assignment.getId());
         }
     }
 
+    // Verifica si el usuario ya entrego esa tarea para que no se vaya duplicada
     private void validateSubmissionNotExists(UUID userId, Integer assignmentId) {
         if (submissionRepository.existsByAssignmentIdAndUserId(assignmentId, userId)) {
             throw new SubmissionAlreadyExistException(userId, assignmentId);
         }
     }
 
+    // Comprobar que exista el Submission
     private Submission findSubmissionOrThrow(Integer id){
         return submissionRepository.findById(id)
                 .orElseThrow(() -> new SubmissionNotFoundException(id));
