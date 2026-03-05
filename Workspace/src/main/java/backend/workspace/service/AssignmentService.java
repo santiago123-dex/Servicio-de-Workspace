@@ -46,6 +46,10 @@ public class AssignmentService {
 
     }
 
+    // Se obtienen las tareas segun el workspace, pero antes se valida que el workspace exista, 
+    // si no existe se lanza una excepcion,
+    //  luego se buscan las tareas por el id del workspace y se actualiza su estado a cerrado si ya paso la fecha de vencimiento,
+    //  por ultimo se convierten a response y se devuelven
     @Transactional
     public List<AssignmentResponse> getAssignmentsByWorkspace(Integer workspaceId){
         validateWorkspace(workspaceId);
