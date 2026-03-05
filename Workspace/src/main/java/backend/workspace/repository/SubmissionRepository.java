@@ -18,5 +18,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, Integer>
     // verificamos si existe al menos un registro de submission donde haya un assignment y un usuario
     boolean existsByAssignmentIdAndUserId(Integer assignmentId, UUID userId);
 
+    void deleteAllSubmission(Integer assignmentId);
 
 }
