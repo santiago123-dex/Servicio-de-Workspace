@@ -19,6 +19,7 @@ public class AssignmentController {
 
         private final AssignmentService assignmentService;
 
+        // Endpoint para crear una nueva tarea
         @PostMapping()
         public ResponseEntity<AssignmentResponse> createAssignment(@Valid @RequestBody AssignmentRequest request){
 
@@ -27,12 +28,14 @@ public class AssignmentController {
 
         }
 
+        // Endpoint para obtener las tareas de un espacio de trabajo en especifico
         @GetMapping("/workspace/{workspaceId}")
         public ResponseEntity<List<AssignmentResponse>> getAssignmentsByWorkspace(@PathVariable Integer workspaceId){
                 List<AssignmentResponse> assignments = assignmentService.getAssignmentsByWorkspace(workspaceId);
                 return ResponseEntity.ok(assignments);
         }
 
+        // Endpoint para obtener las tareas de un espacio de trabajo en especifico filtradas por estado
         @GetMapping("/workspace/{workspaceId}/status/{status}")
         public ResponseEntity<List<AssignmentResponse>> getAssignmentsByWorkspaceAndStatus
                 (@PathVariable Integer workspaceId,
@@ -41,18 +44,21 @@ public class AssignmentController {
                 return ResponseEntity.ok(assignments);
         }
 
+        // Endpoint para obtener una tarea por su id
         @GetMapping("/{id}")
         public ResponseEntity<AssignmentResponse> getAssignmentById(@PathVariable Integer id){
                 AssignmentResponse response = assignmentService.getAssignmentById(id);
                 return ResponseEntity.ok(response);
         }
 
+        // Endpoint para actualizar una tarea
         @PutMapping("/{id}")
         public ResponseEntity<AssignmentResponse> updateAssignment(@PathVariable Integer id, @Valid @RequestBody AssignmentRequest request){
                 AssignmentResponse response = assignmentService.updateAssignment(id, request);
                 return ResponseEntity.ok(response);
         }
 
+        // Endpoint para eliminar una tarea
         @DeleteMapping("/{id}")
         public ResponseEntity<Void> deleteAssignment(@PathVariable Integer id) {
                 assignmentService.deleteAssignment(id);
