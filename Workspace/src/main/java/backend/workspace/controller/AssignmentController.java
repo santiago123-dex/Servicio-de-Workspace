@@ -28,7 +28,7 @@ public class AssignmentController {
         }
 
         @GetMapping("/workspace/{workspaceId}")
-        public ResponseEntity<List<AssignmentResponse>> getAssignmentByWorkspace(@PathVariable Integer workspaceId){
+        public ResponseEntity<List<AssignmentResponse>> getAssignmentsByWorkspace(@PathVariable Integer workspaceId){
                 List<AssignmentResponse> assignments = assignmentService.getAssignmentsByWorkspace(workspaceId);
                 return ResponseEntity.ok(assignments);
         }
