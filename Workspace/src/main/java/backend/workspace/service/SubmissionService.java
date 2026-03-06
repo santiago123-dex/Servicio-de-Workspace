@@ -48,6 +48,7 @@ public class SubmissionService {
         return SubmissionResponse.fromEntity(saved);
     }
 
+    // Devuelve la lista de tareas entregadas para una tarea en especifico
     public List<SubmissionResponse> getSubmissionsByAssignment(Integer assignmentId) {
 
         validateAssignmentExists(assignmentId);
@@ -59,7 +60,7 @@ public class SubmissionService {
     }
 
     // Devuelve la lista de tareas que ha enviado un usuario en especifico
-    public List<SubmissionResponse> getSubmissionByUser(Integer userId) {
+    public List<SubmissionResponse> getSubmissionByUser(UUID userId) {
 
         return submissionRepository.findByUserId(userId)
                 .stream()
