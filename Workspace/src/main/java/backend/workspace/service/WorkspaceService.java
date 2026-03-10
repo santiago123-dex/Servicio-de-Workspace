@@ -3,7 +3,6 @@ package backend.workspace.service;
 import backend.workspace.dto.Workspace.WorkspaceRequest;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
 import backend.workspace.entity.Workspace;
-import backend.workspace.exception.Workspace.InvalidWorkspaceException;
 import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
 
 import backend.workspace.repository.WorkspaceRepository;
@@ -28,9 +27,6 @@ public class WorkspaceService {
     }
     @Transactional
     public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) {
-
-        validateWorkspaceCreation(workspaceRequest);
-
         UUID currentUserId = getCurrentUserId();
 
         Workspace workspace = buildWorkspace(workspaceRequest, currentUserId);
@@ -84,17 +80,11 @@ public class WorkspaceService {
 
     // Metodos privados
 
-    private void validateWorkspaceCreation(WorkspaceRequest request){
-        if (request.status() == Workspace.WorkspaceStatus.ARCHIVADO){
-            throw new InvalidWorkspaceException("No se puede crear el workspace en estado ARCHIVADO");
-        }
-    }
-
     private Workspace buildWorkspace(WorkspaceRequest request, UUID currenteUserId){
         return Workspace.builder()
                 .name(request.name())
                 .description(request.description())
-                .status(request.status())
+                .status(Workspace.WorkspaceStatus.ACTIVO)
                 .data(request.data())
                 .ownerUserID(currenteUserId)
                 .build();
@@ -112,7 +102,9 @@ public class WorkspaceService {
     private void updateWorkspaceFields(Workspace workspace, WorkspaceRequest workspaceRequest){
         workspace.setName(workspaceRequest.name());
         workspace.setDescription(workspaceRequest.description());
-        workspace.setStatus(workspaceRequest.status());
+        if (workspaceRequest.status() != null) {
+            workspace.setStatus(workspaceRequest.status());
+        }
         workspace.setData(workspaceRequest.data());
     }
 
