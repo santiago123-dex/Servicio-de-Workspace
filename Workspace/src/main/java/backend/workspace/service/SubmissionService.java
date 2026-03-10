@@ -102,6 +102,7 @@ public class SubmissionService {
     @Transactional
     public void deleteSubmission(Integer id){
         Submission submission = findSubmissionOrThrow(id);
+        //Se obtiene la tarea a la que pertenece las submission
         Assignment assignment = submission.getAssignment();
         assignment.getSubmissions().remove(submission);
         submissionRepository.delete(submission);
