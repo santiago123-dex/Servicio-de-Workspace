@@ -1,8 +1,7 @@
 {
   "info": {
-    "_postman_id": "7d60f3f0-78fd-4b8b-a9fb-5af03ce55d17",
+    "_postman_id": "3443398f-2717-4ff8-b6f4-b6749169f925",
     "name": "Servicio de Workspace",
-    "description": "Coleccion para probar todos los endpoints activos del servicio de Workspace.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -12,19 +11,19 @@
     },
     {
       "key": "workspaceId",
-      "value": ""
+      "value": "1"
     },
     {
       "key": "memberId",
-      "value": ""
+      "value": "1"
     },
     {
       "key": "assignmentId",
-      "value": ""
+      "value": "1"
     },
     {
       "key": "submissionId",
-      "value": ""
+      "value": "1"
     },
     {
       "key": "userId",
@@ -45,19 +44,6 @@
       "item": [
         {
           "name": "Test String",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
             "header": [
@@ -75,19 +61,6 @@
         },
         {
           "name": "Test JSON",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
             "header": [
@@ -105,23 +78,6 @@
         },
         {
           "name": "Create Workspace",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});",
-                  "var json = pm.response.json();",
-                  "if (json.id) {",
-                  "  pm.collectionVariables.set('workspaceId', json.id);",
-                  "}"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
             "header": [
@@ -139,19 +95,6 @@
         },
         {
           "name": "Get All Workspaces",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/workspaces/getAllWorkspaces"
@@ -159,19 +102,6 @@
         },
         {
           "name": "Get Workspace By Id",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/workspaces/getWorkspaceById/{{workspaceId}}"
@@ -179,19 +109,6 @@
         },
         {
           "name": "Update Workspace",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -209,19 +126,6 @@
         },
         {
           "name": "Delete Workspace",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 204', function () {",
-                  "  pm.response.to.have.status(204);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "DELETE",
             "url": "{{baseUrl}}/api/workspaces/deleteWorkspace/{{workspaceId}}"
@@ -234,23 +138,6 @@
       "item": [
         {
           "name": "Add Member",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});",
-                  "var json = pm.response.json();",
-                  "if (json.id) {",
-                  "  pm.collectionVariables.set('memberId', json.id);",
-                  "}"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
             "header": [
@@ -261,26 +148,13 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"workspaceId\": {{workspaceId}},\n  \"userId\": \"{{memberUserId}}\",\n  \"role\": \"MEMBER\"\n}"
+              "raw": "{\n  \"workspaceId\": 1,\n  \"userId\": \"{{memberUserId}}\",\n  \"role\": \"MEMBER\"\n}"
             },
             "url": "{{baseUrl}}/api/workspace-member/addMember"
           }
         },
         {
           "name": "Get Members By Workspace",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/workspace-member/workspace/{{workspaceId}}"
@@ -288,19 +162,6 @@
         },
         {
           "name": "Get Workspaces By User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/workspace-member/user/{{memberUserId}}"
@@ -308,19 +169,6 @@
         },
         {
           "name": "Delete Member",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 204', function () {",
-                  "  pm.response.to.have.status(204);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "DELETE",
             "url": "{{baseUrl}}/api/workspace-member/{{memberId}}"
@@ -333,23 +181,6 @@
       "item": [
         {
           "name": "Create Assignment",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 201', function () {",
-                  "  pm.response.to.have.status(201);",
-                  "});",
-                  "var json = pm.response.json();",
-                  "if (json.id) {",
-                  "  pm.collectionVariables.set('assignmentId', json.id);",
-                  "}"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
             "header": [
@@ -360,26 +191,13 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"workspaceId\": {{workspaceId}},\n  \"name\": \"Tarea API\",\n  \"description\": \"Tarea creada desde la coleccion\",\n  \"dueDate\": \"2099-12-31T23:59:00Z\",\n  \"rubric\": {\n    \"clarity\": 50,\n    \"logic\": 50\n  },\n  \"settings\": {\n    \"attempts\": 1,\n    \"allowLate\": false\n  }\n}"
+              "raw": "{\n  \"workspaceId\": 1,\n  \"name\": \"Tarea API\",\n  \"description\": \"Tarea creada desde la coleccion\",\n  \"dueDate\": \"2099-12-31T23:59:00Z\",\n  \"rubric\": {\n    \"clarity\": 50,\n    \"logic\": 50\n  },\n  \"settings\": {\n    \"attempts\": 1,\n    \"allowLate\": false\n  }\n}"
             },
             "url": "{{baseUrl}}/api/assignments"
           }
         },
         {
           "name": "Get Assignments By Workspace",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/assignments/workspace/{{workspaceId}}"
@@ -387,19 +205,6 @@
         },
         {
           "name": "Get Assignments By Workspace And Status",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/assignments/workspace/{{workspaceId}}/status/{{assignmentStatus}}"
@@ -407,19 +212,6 @@
         },
         {
           "name": "Get Assignment By Id",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/assignments/{{assignmentId}}"
@@ -427,19 +219,6 @@
         },
         {
           "name": "Update Assignment",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -450,26 +229,13 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"workspaceId\": {{workspaceId}},\n  \"name\": \"Tarea API actualizada\",\n  \"description\": \"Tarea actualizada desde Postman\",\n  \"dueDate\": \"2099-12-31T23:59:00Z\",\n  \"rubric\": {\n    \"clarity\": 40,\n    \"logic\": 60\n  },\n  \"settings\": {\n    \"attempts\": 2,\n    \"allowLate\": true\n  }\n}"
+              "raw": "{\n  \"workspaceId\": 1,\n  \"name\": \"Tarea API actualizada\",\n  \"description\": \"Tarea actualizada desde Postman\",\n  \"dueDate\": \"2099-12-31T23:59:00Z\",\n  \"rubric\": {\n    \"clarity\": 40,\n    \"logic\": 60\n  },\n  \"settings\": {\n    \"attempts\": 2,\n    \"allowLate\": true\n  }\n}"
             },
             "url": "{{baseUrl}}/api/assignments/{{assignmentId}}"
           }
         },
         {
           "name": "Delete Assignment",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 204', function () {",
-                  "  pm.response.to.have.status(204);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "DELETE",
             "url": "{{baseUrl}}/api/assignments/{{assignmentId}}"
@@ -482,24 +248,6 @@
       "item": [
         {
           "name": "Create Submission",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 201', function () {",
-                  "  pm.response.to.have.status(201);",
-                  "});",
-                  "var json = pm.response.json();",
-                  "var submissionId = json.id || json.Id;",
-                  "if (submissionId) {",
-                  "  pm.collectionVariables.set('submissionId', submissionId);",
-                  "}"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "POST",
             "header": [
@@ -510,26 +258,13 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"assignmentId\": {{assignmentId}},\n  \"userId\": \"{{userId}}\",\n  \"content\": {\n    \"answer\": \"Entrega de prueba\"\n  },\n  \"files\": {\n    \"repository\": \"https://github.com/example/repo\"\n  }\n}"
+              "raw": "{\n  \"assignmentId\": 1,\n  \"userId\": \"{{userId}}\",\n  \"content\": {\n    \"answer\": \"Entrega de prueba\"\n  },\n  \"files\": {\n    \"repository\": \"https://github.com/example/repo\"\n  }\n}"
             },
             "url": "{{baseUrl}}/api/submission"
           }
         },
         {
           "name": "Get Submissions By Assignment",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/submission/assignment/{{assignmentId}}"
@@ -537,19 +272,6 @@
         },
         {
           "name": "Get Submissions By User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/submission/user/{{userId}}"
@@ -557,19 +279,6 @@
         },
         {
           "name": "Get Submission By Id",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/submission/{{submissionId}}"
@@ -577,19 +286,6 @@
         },
         {
           "name": "Update Submission",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 200', function () {",
-                  "  pm.response.to.have.status(200);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "PUT",
             "header": [
@@ -600,26 +296,13 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"assignmentId\": {{assignmentId}},\n  \"userId\": \"{{userId}}\",\n  \"content\": {\n    \"answer\": \"Entrega actualizada\"\n  },\n  \"files\": {\n    \"repository\": \"https://github.com/example/repo-updated\"\n  }\n}"
+              "raw": "{\n  \"assignmentId\": 1,\n  \"userId\": \"{{userId}}\",\n  \"content\": {\n    \"answer\": \"Entrega actualizada\"\n  },\n  \"files\": {\n    \"repository\": \"https://github.com/example/repo-updated\"\n  }\n}"
             },
             "url": "{{baseUrl}}/api/submission/{{submissionId}}"
           }
         },
         {
           "name": "Delete Submission",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('Status 204', function () {",
-                  "  pm.response.to.have.status(204);",
-                  "});"
-                ]
-              }
-            }
-          ],
           "request": {
             "method": "DELETE",
             "url": "{{baseUrl}}/api/submission/{{submissionId}}"
