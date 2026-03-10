@@ -20,7 +20,7 @@ public record AssignmentResponse(
     public static AssignmentResponse fromEntity(Assignment assignment){
         return new AssignmentResponse(
                 assignment.getId(),
-                assignment.getWorkspaceId(),
+                assignment.getWorkspace().getId(),
                 assignment.getName(),
                 assignment.getDescription(),
                 assignment.getDueDate(),
