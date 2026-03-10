@@ -4,6 +4,7 @@ import backend.workspace.dto.WorkspaceMember.WorkspaceMemberRequest;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
 import backend.workspace.entity.Workspace;
 import backend.workspace.entity.WorkspaceMember;
+import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
 import backend.workspace.exception.WorkspaceMember.MemberAlreadyExistException;
 import backend.workspace.exception.WorkspaceMember.MemberNotFoundException;
 import backend.workspace.repository.WorkspaceMemberRepository;
@@ -18,11 +19,11 @@ import java.util.UUID;
 public class WorkspaceMemberService {
 
     private final WorkspaceMemberRepository workspaceMemberRepository;
-    private final WorkspaceService workspaceService;
+    private final WorkspaceRepository workspaceRepository;
 
-    public WorkspaceMemberService(WorkspaceMemberRepository workspaceMemberRepository, WorkspaceService workspaceService) {
+    public WorkspaceMemberService(WorkspaceMemberRepository workspaceMemberRepository, WorkspaceRepository workspaceRepository) {
         this.workspaceMemberRepository = workspaceMemberRepository;
-        this.workspaceService = workspaceService;
+        this.workspaceRepository = workspaceRepository;
     }
 
     //Agregar como ADMIN al creador de Workspace automaticamente
@@ -43,7 +44,7 @@ public class WorkspaceMemberService {
     // Invitar a un usuario a un workspace
     public WorkspaceMemberResponse addMember(WorkspaceMemberRequest request){
 
-        Workspace workpace = workspaceService.findWorkspaceOrThrow(request.workspaceId());
+        Workspace workpace = findWorkspaceOrThrow(request.workspaceId());
 
         if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(request.workspaceId(), request.userId())){
             throw new MemberAlreadyExistException(request.userId(), request.workspaceId());
@@ -69,7 +70,7 @@ public class WorkspaceMemberService {
     // Obtener todos los miembros del workspace
     public List<WorkspaceMemberResponse> getMembersByWorkspace(Integer workspaceId){
         // Comprueba en la tabla de workspace si existe el workspace
-        existById(workspaceId);
+        findWorkspaceOrThrow(workspaceId);
 
         return workspaceMemberRepository.findByWorkspaceId(workspaceId)
                 // Transforma la lista de WorkspaceMember a WorkspaceMemberResponse
@@ -120,10 +121,9 @@ public class WorkspaceMemberService {
                 .orElseThrow(() -> new MemberNotFoundException(id));
     }
 
-    private void existById(Integer id){
-        if (!workspaceMemberRepository.existsById(id)){
-            throw new MemberNotFoundException(id);
-        }
+    private Workspace findWorkspaceOrThrow(Integer id) {
+        return workspaceRepository.findById(id)
+                .orElseThrow(() -> new WorkspaceNotFoundException(id));
     }
 
 }
