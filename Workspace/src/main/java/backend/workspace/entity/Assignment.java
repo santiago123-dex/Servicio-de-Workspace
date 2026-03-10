@@ -12,6 +12,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -25,9 +27,6 @@ public class Assignment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "workspace_id", nullable = false)
-    private Integer workspaceId;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
@@ -70,6 +69,18 @@ public class Assignment {
     @Column(name = "settings", columnDefinition = "jsonb")
     private Map<String,Object> settings;
 
+
+    //Relaciones
+
+    //fetch para decir que no cargue las tareas a no ser que las necesite
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workspace_id", nullable = false)
+    private Workspace workspace;
+
+    //el campo assignment en submissions tiene una fk
+    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Submission> submissions = new ArrayList<>();
 
 
 

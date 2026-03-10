@@ -35,7 +35,7 @@ public class SubmissionService {
         validateSubmissionNotExists(request.userId(), request.assignmentId());
 
         Submission submission = Submission.builder()
-                .assignmentId(request.assignmentId())
+                .assignment(assignment)
                 .userId(request.userId())
                 .content(request.content())
                 .files(request.files())
@@ -84,7 +84,8 @@ public class SubmissionService {
 
         Submission submission = findSubmissionOrThrow(id);
 
-        Assignment assignment = validateAssignmentExists(submission.getAssignmentId());
+        Assignment assignment = submission.getAssignment();
+        validateAssignmentNotExpired(assignment);
 
         submission.setContent(request.content());
         submission.setFiles(request.files());

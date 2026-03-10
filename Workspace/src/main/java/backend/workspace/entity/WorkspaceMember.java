@@ -27,9 +27,6 @@ public class WorkspaceMember {
     @Column(name = "user_id", nullable = true)
     private UUID userId;
 
-    @Column(name = "workspace_id", nullable = false)
-    private Integer workspaceId;
-
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "role", nullable = false)
     private Role role;
@@ -49,4 +46,9 @@ public class WorkspaceMember {
         }
     }
 
+    //fetch funciona para decir que no carga el workspace hasta que lo necesite
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workspace_id", nullable = false)
+    //Ahora guardamos all el objeto no solo el Id
+    private Workspace workspace;
 }

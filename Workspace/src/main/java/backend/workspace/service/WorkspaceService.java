@@ -34,9 +34,10 @@ public class WorkspaceService {
         UUID currentUserId = getCurrentUserId();
 
         Workspace workspace = buildWorkspace(workspaceRequest, currentUserId);
+
         Workspace saved = workspaceRepository.save(workspace);
 
-        workspaceMemberService.addOwnerAsAdmin(saved.getId(), saved.getOwnerUserID());
+        workspaceMemberService.addOwnerAsAdmin(saved, saved.getOwnerUserID());
 
         return WorkspaceResponse.fromEntity(saved, "Workspace creado correctamente");
     }
@@ -69,13 +70,16 @@ public class WorkspaceService {
     public void deleteWorkspace(Integer id) {
         // Se usa el find porque antes de borrar el workspace toca borrar los usuarios y las tareas
         //Osea que depende de otros para ser borrada
-        Workspace workspace = findWorkspaceById(id);
-
-        // Eliminar todos los miembros del workspace incluyendo el dueño
-        workspaceMemberService.deleteAllMembersByWorkspace(id);
-
+        Workspace workspace = findWorkspaceOrThrow(id);
         // Eliminar el workspace
         workspaceRepository.delete(workspace);
+    }
+
+
+    // ========== ✅ AGREGADO: funcion pública para que otros services lo usen ==========
+    public Workspace findWorkspaceOrThrow(Integer id) {
+        return workspaceRepository.findById(id)
+                .orElseThrow(() -> new WorkspaceNotFoundException(id));
     }
 
     // Metodos privados
