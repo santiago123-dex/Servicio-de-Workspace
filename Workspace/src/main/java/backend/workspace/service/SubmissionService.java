@@ -28,6 +28,7 @@ public class SubmissionService {
         this.assignmentService = assignmentService;
     }
 
+    @Transactional
     public SubmissionResponse submitAssignment(SubmissionRequest request) {
 
         // Evitamos dos consultas y primero declaramos la variable, y luego dependiendo del id lo guardamos en la variable
