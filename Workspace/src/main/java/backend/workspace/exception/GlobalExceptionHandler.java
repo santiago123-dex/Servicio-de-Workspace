@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
      @ExceptionHandler(MemberAlreadyExistException.class)
      public ResponseEntity<ErrorResponse> handleMemberAlreadyExists(MemberAlreadyExistException ex, WebRequest request){
         ErrorResponse errorResponse = ErrorResponse.of(
-                HttpStatus.CONTINUE.value(),
+                HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
                 "Conflict",
                 getPath(request)
@@ -138,7 +138,7 @@ public class GlobalExceptionHandler {
      //Exception De Assignment not found
 
     @ExceptionHandler(AssignmentNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleAssigmenteNotFound(AssignmentNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleAssignmentNotFound(AssignmentNotFoundException ex, WebRequest request) {
         ErrorResponse errorResponse = ErrorResponse.of(
                 HttpStatus.NOT_FOUND.value(),
                 "Not Found",
