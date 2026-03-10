@@ -11,6 +11,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -67,6 +69,20 @@ public class Workspace {
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
+
+    /* AGREGADO DE RELACIONES */
+
+    //El campo workspace en workspaceMember tiene FK
+    //El CascadeAll es para decir que si borro un workspace se borran los Members
+    //Y el orphan para decir que si se borra un member de la lista se borra de la DB
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
+    //Lombok inicializa la lista vacia por defecto
+    @Builder.Default
+    private List<WorkspaceMember> members = new ArrayList<>();
+
+    @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Assignment> assignments = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

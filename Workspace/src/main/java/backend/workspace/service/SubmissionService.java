@@ -5,12 +5,9 @@ import backend.workspace.dto.Submission.SubmissionResponse;
 import backend.workspace.entity.Assignment;
 import backend.workspace.entity.Submission;
 import backend.workspace.exception.Assignment.AssignmentExpiredException;
-import backend.workspace.exception.Assignment.AssignmentNotFoundException;
 import backend.workspace.exception.Submission.SubmissionAlreadyExistException;
 import backend.workspace.exception.Submission.SubmissionNotFoundException;
-import backend.workspace.repository.AssignmentRepository;
 import backend.workspace.repository.SubmissionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,27 +16,34 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 // Indica que el servicio es de solo lectura
 @Transactional(readOnly = true)
 public class SubmissionService {
 
     private final SubmissionRepository submissionRepository;
-    private final AssignmentRepository assignmentRepository;
+    private final AssignmentService assignmentService;
 
+    public SubmissionService(SubmissionRepository submissionRepository, AssignmentService assignmentService) {
+        this.submissionRepository = submissionRepository;
+        this.assignmentService = assignmentService;
+    }
+
+    @Transactional
     public SubmissionResponse submitAssignment(SubmissionRequest request) {
 
         // Evitamos dos consultas y primero declaramos la variable, y luego dependiendo del id lo guardamos en la variable
-        Assignment assignment = validateAssignmentExists(request.assignmentId());
+        Assignment assignment = assignmentService.findAssignmentOrThrow(request.assignmentId());
         validateAssignmentNotExpired(assignment);
         validateSubmissionNotExists(request.userId(), request.assignmentId());
 
         Submission submission = Submission.builder()
-                .assignmentId(request.assignmentId())
                 .userId(request.userId())
                 .content(request.content())
                 .files(request.files())
                 .build();
+
+        submission.setAssignment(assignment);
+        assignment.getSubmissions().add(submission);
 
         // Utilizamos la instacia que retorna el save porque jpa puede devolver una entidad administrada
         // diferente a la original asi que con esta garantizamos que usamos la version persistida
@@ -48,9 +52,10 @@ public class SubmissionService {
         return SubmissionResponse.fromEntity(saved);
     }
 
+    // Devuelve la lista de tareas entregadas para una tarea en especifico
     public List<SubmissionResponse> getSubmissionsByAssignment(Integer assignmentId) {
 
-        validateAssignmentExists(assignmentId);
+        assignmentService.findAssignmentOrThrow(assignmentId);
 
         return submissionRepository.findByAssignmentId(assignmentId)
                 .stream()
@@ -59,7 +64,7 @@ public class SubmissionService {
     }
 
     // Devuelve la lista de tareas que ha enviado un usuario en especifico
-    public List<SubmissionResponse> getSubmissionByUser(Integer userId) {
+    public List<SubmissionResponse> getSubmissionByUser(UUID userId) {
 
         return submissionRepository.findByUserId(userId)
                 .stream()
@@ -83,7 +88,8 @@ public class SubmissionService {
 
         Submission submission = findSubmissionOrThrow(id);
 
-        Assignment assignment = validateAssignmentExists(submission.getAssignmentId());
+        Assignment assignment = submission.getAssignment();
+        validateAssignmentNotExpired(assignment);
 
         submission.setContent(request.content());
         submission.setFiles(request.files());
@@ -94,22 +100,16 @@ public class SubmissionService {
 
     }
 
+    @Transactional
     public void deleteSubmission(Integer id){
-
-        if (!submissionRepository.existsById(id)){
-            throw new SubmissionNotFoundException(id);
-        }
-
-        submissionRepository.deleteById(id);
+        Submission submission = findSubmissionOrThrow(id);
+        //Se obtiene la tarea a la que pertenece las submission
+        Assignment assignment = submission.getAssignment();
+        assignment.getSubmissions().remove(submission);
+        submissionRepository.delete(submission);
     }
 
     // Metodos privados
-
-    // Valida que exista la tarea
-    private Assignment validateAssignmentExists(Integer id) {
-        return assignmentRepository.findById(id)
-                .orElseThrow(() -> new AssignmentNotFoundException(id));
-    }
 
     // verifica que no haya expirado la enviada
     private void validateAssignmentNotExpired(Assignment assignment) {

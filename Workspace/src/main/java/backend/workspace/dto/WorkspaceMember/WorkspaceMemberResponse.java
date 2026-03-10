@@ -15,7 +15,7 @@ public record WorkspaceMemberResponse(
     public static WorkspaceMemberResponse fromEntity(WorkspaceMember member, String message){
         return new WorkspaceMemberResponse(
                 member.getId(),
-                member.getWorkspaceId(),
+                member.getWorkspace().getId(),
                 member.getUserId(),
                 member.getRole(),
                 message

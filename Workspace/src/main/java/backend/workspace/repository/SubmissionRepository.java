@@ -14,10 +14,11 @@ public interface SubmissionRepository extends JpaRepository<Submission, Integer>
 
     List<Submission> findByAssignmentId(Integer assignmentId);
 
-    List<Submission> findByUserId(Integer userId);
+    List<Submission> findByUserId(UUID userId);
     // verificamos si existe al menos un registro de submission donde haya un assignment y un usuario
     boolean existsByAssignmentIdAndUserId(Integer assignmentId, UUID userId);
 
-    void deleteAllSubmission(Integer assignmentId);
+    // Elimina todas las submissions de un assignment específico
+    void deleteByAssignmentId(Integer assignmentId);
 
 }

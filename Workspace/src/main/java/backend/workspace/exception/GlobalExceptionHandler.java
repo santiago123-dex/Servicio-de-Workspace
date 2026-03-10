@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 // Lugar donde vamos a procesar todos los errores
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(WorkspaceNotFoundException.class)
@@ -57,7 +59,7 @@ public class GlobalExceptionHandler {
      @ExceptionHandler(MemberAlreadyExistException.class)
      public ResponseEntity<ErrorResponse> handleMemberAlreadyExists(MemberAlreadyExistException ex, WebRequest request){
         ErrorResponse errorResponse = ErrorResponse.of(
-                HttpStatus.CONTINUE.value(),
+                HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
                 "Conflict",
                 getPath(request)
@@ -84,6 +86,7 @@ public class GlobalExceptionHandler {
 
      @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericExeception(Exception ex, WebRequest request){
+        log.error("Unhandled exception on path {}", getPath(request), ex);
         ErrorResponse errorResponse = ErrorResponse.of(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal server error",
@@ -138,7 +141,7 @@ public class GlobalExceptionHandler {
      //Exception De Assignment not found
 
     @ExceptionHandler(AssignmentNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleAssigmenteNotFound(AssignmentNotFoundException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleAssignmentNotFound(AssignmentNotFoundException ex, WebRequest request) {
         ErrorResponse errorResponse = ErrorResponse.of(
                 HttpStatus.NOT_FOUND.value(),
                 "Not Found",

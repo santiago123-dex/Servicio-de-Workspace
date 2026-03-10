@@ -2,7 +2,9 @@ package backend.workspace.service;
 
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberRequest;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
+import backend.workspace.entity.Workspace;
 import backend.workspace.entity.WorkspaceMember;
+import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
 import backend.workspace.exception.WorkspaceMember.MemberAlreadyExistException;
 import backend.workspace.exception.WorkspaceMember.MemberNotFoundException;
 import backend.workspace.repository.WorkspaceMemberRepository;
@@ -25,18 +27,25 @@ public class WorkspaceMemberService {
     }
 
     //Agregar como ADMIN al creador de Workspace automaticamente
-    public void addOwnerAsAdmin(Integer workspaceId, UUID ownerId){
+    public void addOwnerAsAdmin(Workspace workspace, UUID ownerId){
         WorkspaceMember owner = WorkspaceMember.builder()
-                .workspaceId(workspaceId)
                 .userId(ownerId)
                 .role(WorkspaceMember.Role.ADMIN)
                 .build();
+
+        // con el set guardamos el objeto de workspace en owner y luego hacemos el add al arrayList
+        owner.setWorkspace(workspace);
+        //Traemos los datos de la lista y luego agregamos el nuevo
+        workspace.getMembers().add(owner);
+
         workspaceMemberRepository.save(owner);
     }
 
     // Invitar a un usuario a un workspace
     public WorkspaceMemberResponse addMember(WorkspaceMemberRequest request){
-        existById(request.workspaceId());
+
+        Workspace workpace = findWorkspaceOrThrow(request.workspaceId());
+
         if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(request.workspaceId(), request.userId())){
             throw new MemberAlreadyExistException(request.userId(), request.workspaceId());
         }
@@ -44,15 +53,24 @@ public class WorkspaceMemberService {
         // Si tiene role, lo toma, sino es miembro
         WorkspaceMember.Role role = request.role() != null ? request.role() : WorkspaceMember.Role.MEMBER;
 
-        WorkspaceMember workspaceMember = builderWorkspaceMember(request);
-        workspaceMemberRepository.save(workspaceMember);
-        return WorkspaceMemberResponse.fromEntity(workspaceMember, "Miembro agregado correctamente");
+        WorkspaceMember member = WorkspaceMember.builder()
+                .userId(request.userId())
+                .role(role)
+                .build();
+
+
+        // con el set guardamos el objeto de workspace en workspaceMember y luego hacemos el add al arrayList
+        member.setWorkspace(workpace);
+        workpace.getMembers().add(member);
+
+        WorkspaceMember saved = workspaceMemberRepository.save(member);
+        return WorkspaceMemberResponse.fromEntity(saved, "Miembro agregado correctamente");
     }
 
     // Obtener todos los miembros del workspace
     public List<WorkspaceMemberResponse> getMembersByWorkspace(Integer workspaceId){
         // Comprueba en la tabla de workspace si existe el workspace
-        existById(workspaceId);
+        findWorkspaceOrThrow(workspaceId);
 
         return workspaceMemberRepository.findByWorkspaceId(workspaceId)
                 // Transforma la lista de WorkspaceMember a WorkspaceMemberResponse
@@ -85,15 +103,15 @@ public class WorkspaceMemberService {
 
     //Eliminar un miembro del workspace
     public void deleteMember(Integer memberId){
-        existById(memberId);
-        workspaceMemberRepository.deleteById(memberId);
-    }
+        //Obtenemos los datos del miembro, con la comprobacion de que exista
+        WorkspaceMember workspaceMember = findWorkspaceMemberById(memberId);
 
-    //Eliminar todos los miembros de un workspace, para poder borrar el workspace
-    @Transactional
-    public void deleteAllMembersByWorkspace(Integer workspaceId){
-        existById(workspaceId);
-        workspaceMemberRepository.deleteMembersByWorkspaceId(workspaceId);
+        //traemos el workspace del miembro
+        Workspace workspace = workspaceMember.getWorkspace();
+        //Lo eliminamos de la lista
+        workspace.getMembers().remove(workspaceMember);
+        //Lo eliminamos de la base de datos
+        workspaceMemberRepository.delete(workspaceMember);
     }
 
     // Metodo privados
@@ -103,18 +121,9 @@ public class WorkspaceMemberService {
                 .orElseThrow(() -> new MemberNotFoundException(id));
     }
 
-    private WorkspaceMember builderWorkspaceMember(WorkspaceMemberRequest request){
-        return WorkspaceMember.builder()
-                .workspaceId(request.workspaceId())
-                .userId(request.userId())
-                .role(request.role())
-                .build();
-    }
-
-    private void existById(Integer id){
-        if (!workspaceMemberRepository.existsById(id)){
-            throw new MemberNotFoundException(id);
-        }
+    private Workspace findWorkspaceOrThrow(Integer id) {
+        return workspaceRepository.findById(id)
+                .orElseThrow(() -> new WorkspaceNotFoundException(id));
     }
 
 }

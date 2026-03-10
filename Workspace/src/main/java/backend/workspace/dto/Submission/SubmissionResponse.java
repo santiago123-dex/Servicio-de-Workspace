@@ -20,7 +20,7 @@ public record SubmissionResponse(
     public static SubmissionResponse fromEntity(Submission submission){
         return new SubmissionResponse(
                 submission.getId(),
-                submission.getAssignmentId(),
+                submission.getAssignment().getId(),
                 submission.getUserId(),
                 submission.getCreatedAt(),
                 submission.getContent(),

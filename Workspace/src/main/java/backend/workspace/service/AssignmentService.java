@@ -3,6 +3,7 @@ package backend.workspace.service;
 import backend.workspace.dto.Assignment.AssignmentRequest;
 import backend.workspace.dto.Assignment.AssignmentResponse;
 import backend.workspace.entity.Assignment;
+import backend.workspace.entity.Workspace;
 import backend.workspace.exception.Assignment.AssignmentNotFoundException;
 import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
 import backend.workspace.repository.AssignmentRepository;
@@ -19,19 +20,21 @@ public class AssignmentService {
 
     private final AssignmentRepository assignmentRepository;
     private final WorkspaceRepository workspaceRepository;
+    private final WorkspaceService workspaceService;
 
-    public AssignmentService(AssignmentRepository assignmentRepository, WorkspaceRepository workspaceRepository){
+    public AssignmentService(AssignmentRepository assignmentRepository, WorkspaceRepository workspaceRepository, WorkspaceService workspaceService){
         this.assignmentRepository = assignmentRepository;
         this.workspaceRepository = workspaceRepository;
+        this.workspaceService = workspaceService;
     }
 
     @Transactional
     public AssignmentResponse createAssignment(AssignmentRequest request){
 
-        validateWorkspace(request.workspaceId());
+        //Buscamos el objeto completo
+        Workspace workspace = workspaceService.findWorkspaceOrThrow(request.workspaceId());
 
         Assignment assignment = Assignment.builder()
-                .workspaceId(request.workspaceId())
                 .name(request.name())
                 .description(request.description())
                 .dueDate(request.dueDate())
@@ -39,6 +42,12 @@ public class AssignmentService {
                 .rubric(request.rubric())
                 .settings(request.settings())
                 .build();
+
+        // ====================== Estas son relaciones Bidireccionales ===================== //
+
+        //Guardamos el objeto completo osea los datos de assignment con el objeto de workspace
+        assignment.setWorkspace(workspace);
+        workspace.getAssignments().add(assignment);
 
         Assignment saved = assignmentRepository.save(assignment);
 
@@ -104,11 +113,16 @@ public class AssignmentService {
 
     @Transactional
     public void deleteAssignment(Integer id){
-        //Se usa el exist porque vamos a borrar la tarea sin depender de nadie
-        if(!assignmentRepository.existsById(id)){
-            throw new AssignmentNotFoundException(id);
-        }
-        assignmentRepository.deleteById(id);
+
+        Assignment assignment = findAssignmentOrThrow(id);
+
+        //traemos el workspace del assignment
+        Workspace workspace = assignment.getWorkspace();
+        workspace.getAssignments().remove(assignment);
+
+        // Gracias a cascade = ALL y orphanRemoval = true,
+        // se borran automáticamente todas las submissions
+        assignmentRepository.delete(assignment);
     }
 
     // Se ejecuta cada hora porque el segundo y el minuto se define en 0
@@ -134,6 +148,12 @@ public class AssignmentService {
             assignment = assignmentRepository.save(assignment);
         }
         return assignment;
+    }
+
+    //Metodo para validar si existe
+    public Assignment findAssignmentOrThrow(Integer id) {
+        return assignmentRepository.findById(id)
+                .orElseThrow(() -> new AssignmentNotFoundException(id));
     }
 
     //Metodos privados

@@ -25,9 +25,6 @@ public class Submission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "assignment_id", nullable = false)
-    private Integer assignmentId;
-
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
@@ -45,6 +42,13 @@ public class Submission {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "ai_result", columnDefinition = "jsonb")
     private Map<String, Object> aiResult;
+
+    //Relaciones
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignment_id", nullable = false)
+    private Assignment assignment;
+
 
     @PrePersist
     public void onCreate() {
