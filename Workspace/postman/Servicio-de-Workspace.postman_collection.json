@@ -70,17 +70,7 @@
               "mode": "raw",
               "raw": "{\"ping\":\"workspace\"}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/api/workspaces/test-string",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspaces",
-                "test-string"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspaces/test-string"
           }
         },
         {
@@ -110,17 +100,7 @@
               "mode": "raw",
               "raw": "{\n  \"ping\": \"workspace\",\n  \"ok\": true\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/api/workspaces/test-json",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspaces",
-                "test-json"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspaces/test-json"
           }
         },
         {
@@ -154,17 +134,7 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Workspace de prueba\",\n  \"description\": \"Coleccion Postman\",\n  \"status\": \"ACTIVO\",\n  \"data\": {\n    \"course\": \"Backend\",\n    \"semester\": \"2026-1\"\n  }\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/api/workspaces/create",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspaces",
-                "create"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspaces/create"
           }
         },
         {
@@ -184,17 +154,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/workspaces/getAllWorkspaces",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspaces",
-                "getAllWorkspaces"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspaces/getAllWorkspaces"
           }
         },
         {
@@ -214,18 +174,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/workspaces/getWorkspaceById/{{workspaceId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspaces",
-                "getWorkspaceById",
-                "{{workspaceId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspaces/getWorkspaceById/{{workspaceId}}"
           }
         },
         {
@@ -255,18 +204,7 @@
               "mode": "raw",
               "raw": "{\n  \"name\": \"Workspace actualizado\",\n  \"description\": \"Workspace actualizado desde Postman\",\n  \"status\": \"ACTIVO\",\n  \"data\": {\n    \"course\": \"Backend\",\n    \"semester\": \"2026-1\",\n    \"updated\": true\n  }\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/api/workspaces/updateWorkspace/{{workspaceId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspaces",
-                "updateWorkspace",
-                "{{workspaceId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspaces/updateWorkspace/{{workspaceId}}"
           }
         },
         {
@@ -286,18 +224,7 @@
           ],
           "request": {
             "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/workspaces/deleteWorkspace/{{workspaceId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspaces",
-                "deleteWorkspace",
-                "{{workspaceId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspaces/deleteWorkspace/{{workspaceId}}"
           }
         }
       ]
@@ -336,17 +263,7 @@
               "mode": "raw",
               "raw": "{\n  \"workspaceId\": {{workspaceId}},\n  \"userId\": \"{{memberUserId}}\",\n  \"role\": \"MEMBER\"\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/api/workspace-member/addMember",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspace-member",
-                "addMember"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspace-member/addMember"
           }
         },
         {
@@ -366,18 +283,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/workspace-member/workspace/{{workspaceId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspace-member",
-                "workspace",
-                "{{workspaceId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspace-member/workspace/{{workspaceId}}"
           }
         },
         {
@@ -397,18 +303,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/workspace-member/user/{{memberUserId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspace-member",
-                "user",
-                "{{memberUserId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspace-member/user/{{memberUserId}}"
           }
         },
         {
@@ -428,17 +323,7 @@
           ],
           "request": {
             "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/workspace-member/{{memberId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "workspace-member",
-                "{{memberId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/workspace-member/{{memberId}}"
           }
         }
       ]
@@ -477,16 +362,7 @@
               "mode": "raw",
               "raw": "{\n  \"workspaceId\": {{workspaceId}},\n  \"name\": \"Tarea API\",\n  \"description\": \"Tarea creada desde la coleccion\",\n  \"dueDate\": \"2099-12-31T23:59:00Z\",\n  \"rubric\": {\n    \"clarity\": 50,\n    \"logic\": 50\n  },\n  \"settings\": {\n    \"attempts\": 1,\n    \"allowLate\": false\n  }\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/api/assignments",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "assignments"
-              ]
-            }
+            "url": "{{baseUrl}}/api/assignments"
           }
         },
         {
@@ -506,18 +382,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/assignments/workspace/{{workspaceId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "assignments",
-                "workspace",
-                "{{workspaceId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/assignments/workspace/{{workspaceId}}"
           }
         },
         {
@@ -537,20 +402,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/assignments/workspace/{{workspaceId}}/status/{{assignmentStatus}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "assignments",
-                "workspace",
-                "{{workspaceId}}",
-                "status",
-                "{{assignmentStatus}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/assignments/workspace/{{workspaceId}}/status/{{assignmentStatus}}"
           }
         },
         {
@@ -570,17 +422,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/assignments/{{assignmentId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "assignments",
-                "{{assignmentId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/assignments/{{assignmentId}}"
           }
         },
         {
@@ -610,17 +452,7 @@
               "mode": "raw",
               "raw": "{\n  \"workspaceId\": {{workspaceId}},\n  \"name\": \"Tarea API actualizada\",\n  \"description\": \"Tarea actualizada desde Postman\",\n  \"dueDate\": \"2099-12-31T23:59:00Z\",\n  \"rubric\": {\n    \"clarity\": 40,\n    \"logic\": 60\n  },\n  \"settings\": {\n    \"attempts\": 2,\n    \"allowLate\": true\n  }\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/api/assignments/{{assignmentId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "assignments",
-                "{{assignmentId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/assignments/{{assignmentId}}"
           }
         },
         {
@@ -640,17 +472,7 @@
           ],
           "request": {
             "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/assignments/{{assignmentId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "assignments",
-                "{{assignmentId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/assignments/{{assignmentId}}"
           }
         }
       ]
@@ -690,16 +512,7 @@
               "mode": "raw",
               "raw": "{\n  \"assignmentId\": {{assignmentId}},\n  \"userId\": \"{{userId}}\",\n  \"content\": {\n    \"answer\": \"Entrega de prueba\"\n  },\n  \"files\": {\n    \"repository\": \"https://github.com/example/repo\"\n  }\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/api/submission",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "submission"
-              ]
-            }
+            "url": "{{baseUrl}}/api/submission"
           }
         },
         {
@@ -719,18 +532,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/submission/assignment/{{assignmentId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "submission",
-                "assignment",
-                "{{assignmentId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/submission/assignment/{{assignmentId}}"
           }
         },
         {
@@ -750,18 +552,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/submission/user/{{userId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "submission",
-                "user",
-                "{{userId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/submission/user/{{userId}}"
           }
         },
         {
@@ -781,17 +572,7 @@
           ],
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/submission/{{submissionId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "submission",
-                "{{submissionId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/submission/{{submissionId}}"
           }
         },
         {
@@ -821,17 +602,7 @@
               "mode": "raw",
               "raw": "{\n  \"assignmentId\": {{assignmentId}},\n  \"userId\": \"{{userId}}\",\n  \"content\": {\n    \"answer\": \"Entrega actualizada\"\n  },\n  \"files\": {\n    \"repository\": \"https://github.com/example/repo-updated\"\n  }\n}"
             },
-            "url": {
-              "raw": "{{baseUrl}}/api/submission/{{submissionId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "submission",
-                "{{submissionId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/submission/{{submissionId}}"
           }
         },
         {
@@ -851,17 +622,7 @@
           ],
           "request": {
             "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/submission/{{submissionId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "submission",
-                "{{submissionId}}"
-              ]
-            }
+            "url": "{{baseUrl}}/api/submission/{{submissionId}}"
           }
         }
       ]
