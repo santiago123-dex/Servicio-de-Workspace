@@ -88,7 +88,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Workspace de prueba\",\n  \"description\": \"Coleccion Postman\",\n  \"status\": \"ACTIVO\",\n  \"data\": {\n    \"course\": \"Backend\",\n    \"semester\": \"2026-1\"\n  }\n}"
+              "raw": "{\n  \"name\": \"Workspace de prueba\",\n  \"description\": \"Coleccion Postman\",\n  \"data\": {\n    \"course\": \"Backend\",\n    \"semester\": \"2026-1\"\n  }\n}"
             },
             "url": "{{baseUrl}}/api/workspaces/create"
           }
