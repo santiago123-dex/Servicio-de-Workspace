@@ -1,4 +1,23 @@
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: workspace_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/workspace_db
+      TZ: America/Bogota
+    ports:
+      - "8080:8080"
+    networks:
+      - workspace_network
+
   postgres:
     image: postgres:18-alpine
     container_name: postgres_workspace
