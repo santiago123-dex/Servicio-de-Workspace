@@ -14,7 +14,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/workspace_db
       TZ: America/Bogota
     ports:
-      - "8080:8080"
+      - "8082:8082"
     networks:
       - workspace_network
 
