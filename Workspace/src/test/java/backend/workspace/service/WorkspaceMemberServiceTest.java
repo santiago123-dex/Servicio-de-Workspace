@@ -4,8 +4,12 @@ import backend.workspace.dto.WorkspaceMember.WorkspaceMemberRequest;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
 import backend.workspace.entity.Workspace;
 import backend.workspace.entity.WorkspaceMember;
+import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
+import backend.workspace.exception.WorkspaceMember.MemberAlreadyExistException;
+import backend.workspace.exception.WorkspaceMember.MemberNotFoundException;
 import backend.workspace.repository.WorkspaceMemberRepository;
 import backend.workspace.repository.WorkspaceRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,57 +17,50 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// Activa el mockito en JUnit 5
 @ExtendWith(MockitoExtension.class)
 class WorkspaceMemberServiceTest {
 
-    //Crea los objetos simulados
     @Mock
     private WorkspaceMemberRepository workspaceMemberRepository;
 
-    //Crea los objetos simulados, osea que va a simular la dependecia real
-    //No toca la base de datos, ni comandos sql, y no usa el jpa real
     @Mock
     private WorkspaceRepository workspaceRepository;
 
-    //Crea la clase real que se quiere probar e inyecta los moks automaticamente osea los que creamos
     @InjectMocks
     private WorkspaceMemberService workspaceMemberService;
 
-    //es un metodo que se va a ejecutar como una prueba
-    @Test
-    // nombre del metodo, deberia crear el miembro cuando el codigo existe y el usuario no es miembro
-    void shouldAddMemberWhenCodeExistAndUserIsNotMember(){
-        UUID userId = UUID.randomUUID();
+    private Workspace workspace;
+    private UUID userId;
 
-        //Se crea el objeto del worskpace para usarlo en el metodo de prueba
-        Workspace workspace = Workspace.builder()
+    @BeforeEach
+    void setUp() {
+        userId = UUID.randomUUID();
+        workspace = Workspace.builder()
                 .id(1)
                 .name("Workspace de prueba")
                 .description("Descripcion")
                 .status(Workspace.WorkspaceStatus.ACTIVO)
                 .members(new ArrayList<>())
                 .build();
+    }
 
-        //Creamos el input real
-        //esto quiero decir que lo que le pasemos le estamos diciendo que me quiero unir al workspace del siguiente codigo y paso el userId
-        //Este request es el dato que se le pasa al metodo real, osea que se pasa al servicio real
+    @Test
+    void shouldAddMemberWhenCodeExistAndUserIsNotMember() {
         WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC123", userId);
 
-        // El when define el comportamiento del mock.
-        // Quiere decir que cuando llamen a findByCode("ABC123"),
-        // el mock del repositorio va a devolver un Optional que contiene el objeto workspace.
         when(workspaceRepository.findByCode("ABC123"))
                 .thenReturn(Optional.of(workspace));
-
         when(workspaceMemberRepository.existsByWorkspaceIdAndUserId(1, userId))
                 .thenReturn(false);
 
@@ -79,16 +76,87 @@ class WorkspaceMemberServiceTest {
 
         WorkspaceMemberResponse response = workspaceMemberService.addMember(request);
 
-        //assertEquals compara el valor esperado con el real
         assertEquals(10, response.id());
         assertEquals(1, response.workspaceId());
         assertEquals(userId, response.userId());
         assertEquals(WorkspaceMember.Role.MEMBER, response.role());
+        assertEquals(1, workspace.getMembers().size());
 
-        //verify Verifica que se haya llamado a un metodo
         verify(workspaceRepository).findByCode("ABC123");
         verify(workspaceMemberRepository).existsByWorkspaceIdAndUserId(1, userId);
         verify(workspaceMemberRepository).save(any(WorkspaceMember.class));
     }
 
+    @Test
+    void shouldThrowWhenWorkspaceCodeDoesNotExist() {
+        WorkspaceMemberRequest request = new WorkspaceMemberRequest("MISSING", userId);
+        when(workspaceRepository.findByCode("MISSING")).thenReturn(Optional.empty());
+
+        assertThrows(WorkspaceNotFoundException.class, () -> workspaceMemberService.addMember(request));
+        verify(workspaceMemberRepository, never()).save(any(WorkspaceMember.class));
+    }
+
+    @Test
+    void shouldThrowWhenMemberAlreadyExists() {
+        WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC123", userId);
+        when(workspaceRepository.findByCode("ABC123")).thenReturn(Optional.of(workspace));
+        when(workspaceMemberRepository.existsByWorkspaceIdAndUserId(1, userId)).thenReturn(true);
+
+        assertThrows(MemberAlreadyExistException.class, () -> workspaceMemberService.addMember(request));
+        verify(workspaceMemberRepository, never()).save(any(WorkspaceMember.class));
+    }
+
+    @Test
+    void shouldAddOwnerAsAdmin() {
+        workspaceMemberService.addOwnerAsAdmin(workspace, userId);
+
+        assertEquals(1, workspace.getMembers().size());
+        assertEquals(WorkspaceMember.Role.ADMIN, workspace.getMembers().getFirst().getRole());
+        assertEquals(userId, workspace.getMembers().getFirst().getUserId());
+        verify(workspaceMemberRepository).save(any(WorkspaceMember.class));
+    }
+
+    @Test
+    void shouldReturnMembersByWorkspace() {
+        WorkspaceMember member = WorkspaceMember.builder()
+                .id(20)
+                .workspace(workspace)
+                .userId(userId)
+                .role(WorkspaceMember.Role.MEMBER)
+                .build();
+        when(workspaceRepository.findById(1)).thenReturn(Optional.of(workspace));
+        when(workspaceMemberRepository.findByWorkspaceId(1)).thenReturn(List.of(member));
+
+        List<WorkspaceMemberResponse> response = workspaceMemberService.getMembersByWorkspace(1);
+
+        assertEquals(1, response.size());
+        assertEquals(20, response.getFirst().id());
+        verify(workspaceRepository).findById(1);
+        verify(workspaceMemberRepository).findByWorkspaceId(1);
+    }
+
+    @Test
+    void shouldDeleteMemberFromWorkspaceAndRepository() {
+        WorkspaceMember member = WorkspaceMember.builder()
+                .id(22)
+                .workspace(workspace)
+                .userId(userId)
+                .role(WorkspaceMember.Role.MEMBER)
+                .build();
+        workspace.getMembers().add(member);
+        when(workspaceMemberRepository.findById(22)).thenReturn(Optional.of(member));
+
+        workspaceMemberService.deleteMember(22);
+
+        assertEquals(0, workspace.getMembers().size());
+        verify(workspaceMemberRepository).delete(member);
+    }
+
+    @Test
+    void shouldThrowWhenDeletingUnknownMember() {
+        when(workspaceMemberRepository.findById(999)).thenReturn(Optional.empty());
+
+        assertThrows(MemberNotFoundException.class, () -> workspaceMemberService.deleteMember(999));
+        verify(workspaceMemberRepository, never()).delete(any(WorkspaceMember.class));
+    }
 }
