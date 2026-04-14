@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/workspaces")
+@RequestMapping("/workspaces")
 @RequiredArgsConstructor
 @Slf4j
 //En este controller usamos el valid para activar las validaciones que tiene los dtos

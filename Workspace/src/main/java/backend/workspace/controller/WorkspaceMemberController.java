@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 @RestController
-@RequestMapping("/api/workspace-member")
+@RequestMapping("/workspaces/member")
 @RequiredArgsConstructor
 public class WorkspaceMemberController {
 
