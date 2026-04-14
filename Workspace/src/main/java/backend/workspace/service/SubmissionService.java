@@ -2,6 +2,7 @@ package backend.workspace.service;
 
 import backend.workspace.dto.Submission.SubmissionRequest;
 import backend.workspace.dto.Submission.SubmissionResponse;
+import backend.workspace.dto.Submission.TeacherRequest;
 import backend.workspace.entity.Assignment;
 import backend.workspace.entity.Submission;
 import backend.workspace.exception.Assignment.AssignmentExpiredException;
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -50,6 +53,26 @@ public class SubmissionService {
         Submission saved = submissionRepository.save(submission);
 
         return SubmissionResponse.fromEntity(saved);
+    }
+
+    // calificacion del profesor
+
+    @Transactional
+    public SubmissionResponse gradeTeacher(Integer id, TeacherRequest request) {
+        Submission submission = findSubmissionOrThrow(id);
+
+        //si ya tiene resultado lo copia en el hasmap si no lo crea
+        Map<String, Object> result = submission.getResult() != null
+                ? new HashMap<>(submission.getResult())
+                : new HashMap<>();
+
+        result.put("teacher", Map.of(
+                "score", request.score(),
+                "feedback", request.feedback()
+        ));
+
+        submission.setResult(result);
+        return SubmissionResponse.fromEntity(submissionRepository.save(submission));
     }
 
     // Devuelve la lista de tareas entregadas para una tarea en especifico

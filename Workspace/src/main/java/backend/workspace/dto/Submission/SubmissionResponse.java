@@ -14,7 +14,7 @@ public record SubmissionResponse(
         OffsetDateTime createdAt,
         Map<String, Object> content,
         Map<String, Object> files,
-        Map<String, Object> aiResult
+        Map<String, Object> result
 ) {
 
     public static SubmissionResponse fromEntity(Submission submission){
@@ -25,7 +25,7 @@ public record SubmissionResponse(
                 submission.getCreatedAt(),
                 submission.getContent(),
                 submission.getFiles(),
-                submission.getAiResult()
+                submission.getResult()
         );
     }
 }
