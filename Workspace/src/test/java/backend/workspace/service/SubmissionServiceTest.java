@@ -2,13 +2,17 @@ package backend.workspace.service;
 
 import backend.workspace.dto.Submission.SubmissionRequest;
 import backend.workspace.dto.Submission.SubmissionResponse;
+import backend.workspace.dto.Submission.TeacherRequest;
 import backend.workspace.entity.Assignment;
 import backend.workspace.entity.Submission;
 import backend.workspace.entity.Workspace;
+import backend.workspace.entity.WorkspaceMember;
 import backend.workspace.exception.Assignment.AssignmentExpiredException;
 import backend.workspace.exception.Submission.SubmissionAlreadyExistException;
 import backend.workspace.exception.Submission.SubmissionNotFoundException;
+import backend.workspace.exception.WorkspaceMember.AdminRequiredException;
 import backend.workspace.repository.SubmissionRepository;
+import backend.workspace.repository.WorkspaceMemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +41,9 @@ class SubmissionServiceTest {
 
     @Mock
     private AssignmentService assignmentService;
+
+    @Mock
+    private WorkspaceMemberRepository workspaceMemberRepository;
 
     @InjectMocks
     private SubmissionService submissionService;
@@ -165,5 +172,44 @@ class SubmissionServiceTest {
         when(submissionRepository.findById(404)).thenReturn(Optional.empty());
 
         assertThrows(SubmissionNotFoundException.class, () -> submissionService.getSubmissionById(404));
+    }
+
+    @Test
+    void shouldGradeTeacherWhenAdmin() {
+        UUID adminId = UUID.randomUUID();
+        TeacherRequest teacherRequest = new TeacherRequest(adminId, new java.math.BigDecimal("4.5"), "Buen trabajo");
+        WorkspaceMember adminMember = WorkspaceMember.builder()
+                .userId(adminId)
+                .role(WorkspaceMember.Role.ADMIN)
+                .workspace(workspace)
+                .build();
+
+        when(submissionRepository.findById(15)).thenReturn(Optional.of(submission));
+        when(workspaceMemberRepository.findByWorkspaceIdAndUserId(1, adminId)).thenReturn(Optional.of(adminMember));
+        when(submissionRepository.save(submission)).thenReturn(submission);
+
+        SubmissionResponse response = submissionService.gradeTeacher(15, teacherRequest);
+
+        Map<String, Object> teacher = (Map<String, Object>) response.result().get("teacher");
+        assertEquals(new java.math.BigDecimal("4.5"), teacher.get("score"));
+        assertEquals("Buen trabajo", teacher.get("feedback"));
+        verify(submissionRepository).save(submission);
+    }
+
+    @Test
+    void shouldThrowWhenTeacherGraderIsNotAdmin() {
+        UUID memberId = UUID.randomUUID();
+        TeacherRequest teacherRequest = new TeacherRequest(memberId, new java.math.BigDecimal("4.2"), "Feedback");
+        WorkspaceMember member = WorkspaceMember.builder()
+                .userId(memberId)
+                .role(WorkspaceMember.Role.MEMBER)
+                .workspace(workspace)
+                .build();
+
+        when(submissionRepository.findById(15)).thenReturn(Optional.of(submission));
+        when(workspaceMemberRepository.findByWorkspaceIdAndUserId(1, memberId)).thenReturn(Optional.of(member));
+
+        assertThrows(AdminRequiredException.class, () -> submissionService.gradeTeacher(15, teacherRequest));
+        verify(submissionRepository, never()).save(any(Submission.class));
     }
 }
