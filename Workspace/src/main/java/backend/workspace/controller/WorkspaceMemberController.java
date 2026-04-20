@@ -2,7 +2,6 @@ package backend.workspace.controller;
 
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberRequest;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
-import backend.workspace.entity.WorkspaceMember;
 import backend.workspace.service.WorkspaceMemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
 @RestController
-@RequestMapping("/api/workspace-member")
+@RequestMapping("/workspaces/member")
 @RequiredArgsConstructor
 public class WorkspaceMemberController {
 

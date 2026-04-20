@@ -10,8 +10,6 @@ import backend.workspace.exception.WorkspaceMember.MemberNotFoundException;
 import backend.workspace.repository.WorkspaceMemberRepository;
 import backend.workspace.repository.WorkspaceRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -44,24 +42,21 @@ public class WorkspaceMemberService {
     // Invitar a un usuario a un workspace
     public WorkspaceMemberResponse addMember(WorkspaceMemberRequest request){
 
-        Workspace workpace = findWorkspaceOrThrow(request.workspaceId());
+        Workspace workspace = findWorkspaceByCodeOrThrow(request.code());
 
-        if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(request.workspaceId(), request.userId())){
-            throw new MemberAlreadyExistException(request.userId(), request.workspaceId());
+        if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspace.getId(), request.userId())){
+            throw new MemberAlreadyExistException(request.userId(), workspace.getId());
         }
-
-        // Si tiene role, lo toma, sino es miembro
-        WorkspaceMember.Role role = request.role() != null ? request.role() : WorkspaceMember.Role.MEMBER;
 
         WorkspaceMember member = WorkspaceMember.builder()
                 .userId(request.userId())
-                .role(role)
+                .role(WorkspaceMember.Role.MEMBER)
                 .build();
 
 
         // con el set guardamos el objeto de workspace en workspaceMember y luego hacemos el add al arrayList
-        member.setWorkspace(workpace);
-        workpace.getMembers().add(member);
+        member.setWorkspace(workspace);
+        workspace.getMembers().add(member);
 
         WorkspaceMember saved = workspaceMemberRepository.save(member);
         return WorkspaceMemberResponse.fromEntity(saved, "Miembro agregado correctamente");
@@ -124,6 +119,11 @@ public class WorkspaceMemberService {
     private Workspace findWorkspaceOrThrow(Integer id) {
         return workspaceRepository.findById(id)
                 .orElseThrow(() -> new WorkspaceNotFoundException(id));
+    }
+
+    private Workspace findWorkspaceByCodeOrThrow(String code) {
+        return workspaceRepository.findByCode(code)
+                .orElseThrow(() -> new WorkspaceNotFoundException("No existe un workspace con el codigo: " + code));
     }
 
 }

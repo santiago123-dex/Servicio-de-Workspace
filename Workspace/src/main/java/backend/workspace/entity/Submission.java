@@ -40,8 +40,8 @@ public class Submission {
     private Map<String, Object> files;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "ai_result", columnDefinition = "jsonb")
-    private Map<String, Object> aiResult;
+    @Column(name = "result", columnDefinition = "jsonb")
+    private Map<String, Object> result;
 
     //Relaciones
 

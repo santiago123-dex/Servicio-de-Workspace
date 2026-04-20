@@ -7,6 +7,7 @@ import backend.workspace.exception.Submission.SubmissionAlreadyExistException;
 import backend.workspace.exception.Submission.SubmissionNotFoundException;
 import backend.workspace.exception.Workspace.InvalidWorkspaceException;
 import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
+import backend.workspace.exception.WorkspaceMember.AdminRequiredException;
 import backend.workspace.exception.WorkspaceMember.MemberAlreadyExistException;
 import backend.workspace.exception.WorkspaceMember.MemberNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +81,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(AdminRequiredException.class)
+    public ResponseEntity<ErrorResponse> handleAdminRequired(AdminRequiredException ex, WebRequest request){
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.FORBIDDEN.value(),
+                "Forbidden",
+                ex.getMessage(),
+                getPath(request)
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(errorResponse);
     }
 

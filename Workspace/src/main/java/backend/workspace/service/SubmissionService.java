@@ -2,17 +2,24 @@ package backend.workspace.service;
 
 import backend.workspace.dto.Submission.SubmissionRequest;
 import backend.workspace.dto.Submission.SubmissionResponse;
+import backend.workspace.dto.Submission.AiGradeRequest;
+import backend.workspace.dto.Submission.TeacherRequest;
 import backend.workspace.entity.Assignment;
 import backend.workspace.entity.Submission;
+import backend.workspace.entity.WorkspaceMember;
 import backend.workspace.exception.Assignment.AssignmentExpiredException;
 import backend.workspace.exception.Submission.SubmissionAlreadyExistException;
 import backend.workspace.exception.Submission.SubmissionNotFoundException;
+import backend.workspace.exception.WorkspaceMember.AdminRequiredException;
 import backend.workspace.repository.SubmissionRepository;
+import backend.workspace.repository.WorkspaceMemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -22,10 +29,12 @@ public class SubmissionService {
 
     private final SubmissionRepository submissionRepository;
     private final AssignmentService assignmentService;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
 
-    public SubmissionService(SubmissionRepository submissionRepository, AssignmentService assignmentService) {
+    public SubmissionService(SubmissionRepository submissionRepository, AssignmentService assignmentService, WorkspaceMemberRepository workspaceMemberRepository) {
         this.submissionRepository = submissionRepository;
         this.assignmentService = assignmentService;
+        this.workspaceMemberRepository = workspaceMemberRepository;
     }
 
     @Transactional
@@ -50,6 +59,44 @@ public class SubmissionService {
         Submission saved = submissionRepository.save(submission);
 
         return SubmissionResponse.fromEntity(saved);
+    }
+
+    // calificacion del profesor
+
+    @Transactional
+    public SubmissionResponse gradeTeacher(Integer id, TeacherRequest request) {
+        Submission submission = findSubmissionOrThrow(id);
+        validateAdminInWorkspace(submission, request.adminUserId());
+
+        //si ya tiene resultado lo copia en el hasmap si no lo crea
+        Map<String, Object> result = submission.getResult() != null
+                ? new HashMap<>(submission.getResult())
+                : new HashMap<>();
+
+        result.put("teacher", Map.of(
+                "score", request.score(),
+                "feedback", request.feedback()
+        ));
+
+        submission.setResult(result);
+        return SubmissionResponse.fromEntity(submissionRepository.save(submission));
+    }
+
+    @Transactional
+    public SubmissionResponse gradeAi(Integer id, AiGradeRequest request) {
+        Submission submission = findSubmissionOrThrow(id);
+
+        Map<String, Object> result = submission.getResult() != null
+                ? new HashMap<>(submission.getResult())
+                : new HashMap<>();
+
+        result.put("ai", Map.of(
+                "score", request.score(),
+                "feedback", request.feedback()
+        ));
+
+        submission.setResult(result);
+        return SubmissionResponse.fromEntity(submissionRepository.save(submission));
     }
 
     // Devuelve la lista de tareas entregadas para una tarea en especifico
@@ -129,6 +176,18 @@ public class SubmissionService {
     private Submission findSubmissionOrThrow(Integer id){
         return submissionRepository.findById(id)
                 .orElseThrow(() -> new SubmissionNotFoundException(id));
+    }
+
+    private void validateAdminInWorkspace(Submission submission, UUID adminUserId) {
+        Integer workspaceId = submission.getAssignment().getWorkspace().getId();
+
+        WorkspaceMember workspaceMember = workspaceMemberRepository
+                .findByWorkspaceIdAndUserId(workspaceId, adminUserId)
+                .orElseThrow(() -> new AdminRequiredException(adminUserId, workspaceId));
+
+        if (workspaceMember.getRole() != WorkspaceMember.Role.ADMIN) {
+            throw new AdminRequiredException(adminUserId, workspaceId);
+        }
     }
 
 

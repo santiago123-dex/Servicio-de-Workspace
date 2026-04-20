@@ -3,6 +3,7 @@ package backend.workspace.controller;
 
 import backend.workspace.dto.Submission.SubmissionRequest;
 import backend.workspace.dto.Submission.SubmissionResponse;
+import backend.workspace.dto.Submission.TeacherRequest;
 
 import backend.workspace.service.SubmissionService;
 import jakarta.validation.Valid;
@@ -16,12 +17,12 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/submission")
+@RequestMapping("/workspaces/submission")
 public class SubmissionController {
 
     private final SubmissionService submissionService;
 
-    // Endpoint para entregar una tarea
+    // Endpoint para entregar una tarea por parted del estudiante
     @PostMapping()
     public ResponseEntity<SubmissionResponse> submitAssignment(@Valid @RequestBody SubmissionRequest request){
 
@@ -60,6 +61,16 @@ public class SubmissionController {
         SubmissionResponse response = submissionService.updateSubmission(id, request);
         return ResponseEntity.ok(response);
 
+    }
+
+    //caliicar
+    @PostMapping("/{id}/grade-teacher")
+    public ResponseEntity<SubmissionResponse> gradeTeacher(
+            @PathVariable Integer id,
+            @Valid @RequestBody TeacherRequest request
+    ){
+        SubmissionResponse response = submissionService.gradeTeacher(id, request);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
