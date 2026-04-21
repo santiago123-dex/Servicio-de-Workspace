@@ -61,7 +61,7 @@ class WorkspaceServiceTest {
     void shouldCreateWorkspaceAndAddOwnerAsAdmin() {
         when(workspaceRepository.save(any(Workspace.class))).thenReturn(workspace);
 
-        WorkspaceResponse response = workspaceService.createWorkspace(request);
+        WorkspaceResponse response = workspaceService.createWorkspace(UUID.fromString("00000000-0000-0000-0000-000000000001"), request);
 
         assertEquals(1, response.id());
         assertEquals("Nuevo workspace", response.name());
