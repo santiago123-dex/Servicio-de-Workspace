@@ -29,8 +29,8 @@ public class WorkspaceMemberController {
         return ResponseEntity.ok(response);
    }
 
-   @GetMapping("/user/{userId}")
-    public ResponseEntity<List<WorkspaceMemberResponse>> getWorkspacesByUser(@PathVariable UUID userId){
+   @GetMapping("/user")
+    public ResponseEntity<List<WorkspaceMemberResponse>> getWorkspacesByUser(@RequestHeader("X-User-Id") UUID userId){
         List<WorkspaceMemberResponse> response = workspaceMemberService.getWorkspacesByUser(userId);
         return ResponseEntity.ok(response);
    }

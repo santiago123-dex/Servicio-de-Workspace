@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/workspaces")
@@ -44,8 +45,8 @@ public class WorkspaceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<WorkspaceResponse> createWorkspace(@Valid @RequestBody WorkspaceRequest workspaceRequest){
-            WorkspaceResponse response = workspaceService.createWorkspace(workspaceRequest);
+    public ResponseEntity<WorkspaceResponse> createWorkspace(@RequestHeader("X-User-Id") UUID userId, @Valid @RequestBody WorkspaceRequest workspaceRequest){
+            WorkspaceResponse response = workspaceService.createWorkspace(userId, workspaceRequest);
             return ResponseEntity.ok(response);
     }
 
