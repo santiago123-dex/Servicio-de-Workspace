@@ -1,5 +1,6 @@
 package backend.workspace.dto.Assignment;
 
+import backend.workspace.entity.Assignment.AssignmentStatus;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -22,6 +23,8 @@ public record AssignmentRequest(
         @NotNull(message = "La fecha de entrega es obligatoria")
         @Future(message = "La fecha de entrega debe de ser futura")
         OffsetDateTime dueDate,
+
+        AssignmentStatus status,
 
         Map<String, Object> rubric,
 

@@ -101,12 +101,13 @@ public class AssignmentService {
         assignment.setName(request.name());
         assignment.setDescription(request.description());
         assignment.setDueDate(request.dueDate());
+        assignment.setStatus(request.status());
         assignment.setRubric(request.rubric());
         assignment.setSettings(request.settings());
 
-        // Le devolvemos a assignmnet el estado verificado
+        /*  Le devolvemos a assignmnet el estado verificado
         assignment = updateStatusIfExpired(assignment);
-        assignmentRepository.save(assignment);
+        assignmentRepository.save(assignment); */
 
         return AssignmentResponse.fromEntity(assignment);
     }

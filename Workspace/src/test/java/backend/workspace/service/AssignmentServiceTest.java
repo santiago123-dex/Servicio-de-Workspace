@@ -73,6 +73,7 @@ class AssignmentServiceTest {
                 "Tarea",
                 "Descripcion",
                 OffsetDateTime.now().plusDays(2),
+                Assignment.AssignmentStatus.PUBLICADO,
                 Map.of("puntaje", 100),
                 Map.of("late", false)
         );
