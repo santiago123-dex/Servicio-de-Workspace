@@ -26,8 +26,7 @@ public class WorkspaceService {
 
     }
     @Transactional
-    public WorkspaceResponse createWorkspace(WorkspaceRequest workspaceRequest) {
-        UUID currentUserId = getCurrentUserId();
+    public WorkspaceResponse createWorkspace(UUID currentUserId, WorkspaceRequest workspaceRequest) {
 
         Workspace workspace = buildWorkspace(workspaceRequest, currentUserId);
 
@@ -88,10 +87,6 @@ public class WorkspaceService {
                 .data(request.data())
                 .ownerUserID(currenteUserId)
                 .build();
-    }
-
-    private UUID getCurrentUserId(){
-        return UUID.fromString("00000000-0000-0000-0000-000000000001");
     }
 
     private Workspace findWorkspaceById(Integer id){
