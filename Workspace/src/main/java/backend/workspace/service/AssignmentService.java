@@ -13,7 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class AssignmentService {
@@ -39,7 +44,7 @@ public class AssignmentService {
                 .description(request.description())
                 .dueDate(request.dueDate())
                 .status(Assignment.AssignmentStatus.PUBLICADO)
-                .rubric(request.rubric())
+                .rubric(normalizeRubric(request.rubric(), request.workspaceId()))
                 .settings(request.settings())
                 .build();
 
@@ -102,7 +107,7 @@ public class AssignmentService {
         assignment.setDescription(request.description());
         assignment.setDueDate(request.dueDate());
         assignment.setStatus(request.status());
-        assignment.setRubric(request.rubric());
+        assignment.setRubric(normalizeRubric(request.rubric(), request.workspaceId()));
         assignment.setSettings(request.settings());
 
         /*  Le devolvemos a assignmnet el estado verificado
@@ -167,6 +172,86 @@ public class AssignmentService {
     private Assignment findAssignmentById(Integer id){
         return assignmentRepository.findById(id)
                 .orElseThrow(() -> new AssignmentNotFoundException(id));
+    }
+
+    private Map<String, Object> normalizeRubric(Map<String, Object> rubric, Integer workspaceId) {
+        if (rubric == null || rubric.isEmpty()) {
+            return rubric;
+        }
+
+        Object criteriaObj = rubric.get("criteria");
+        if (criteriaObj instanceof List<?> rawCriteria) {
+            List<Map<String, Object>> normalizedCriteria = new ArrayList<>();
+            for (Object item : rawCriteria) {
+                if (!(item instanceof Map<?, ?> rawCriterion)) {
+                    continue;
+                }
+
+                Object rawName = rawCriterion.get("name");
+                Object rawCriterionId = rawCriterion.get("criterion_id");
+                Object rawDescription = rawCriterion.get("description");
+                Object rawWeight = rawCriterion.get("weight");
+                Object rawValue = rawCriterion.get("value");
+                Object rawScoringLevels = rawCriterion.get("scoring_levels");
+
+                Map<String, Object> criterion = new LinkedHashMap<>();
+                String name = rawName != null ? String.valueOf(rawName) : "Criterion";
+                String criterionId = rawCriterionId != null ? String.valueOf(rawCriterionId) : slugify(name);
+                String description = rawDescription != null ? String.valueOf(rawDescription) : null;
+                Object value = rawValue != null ? rawValue : (rawWeight != null ? rawWeight : 1.0);
+
+                criterion.put("criterion_id", criterionId);
+                criterion.put("name", name);
+                criterion.put("description", description);
+                criterion.put("value", value);
+                criterion.put("weight", value);
+                criterion.put("scoring_levels", rawScoringLevels != null ? rawScoringLevels : List.of(
+                        Map.of("score", 0, "label", "insufficient", "description", "Does not meet the criterion"),
+                        Map.of("score", value, "label", "meets", "description", "Meets the criterion")
+                ));
+                normalizedCriteria.add(criterion);
+            }
+
+            Map<String, Object> normalized = new LinkedHashMap<>();
+            normalized.put("rubric_id", rubric.getOrDefault("rubric_id", UUID.randomUUID().toString()));
+            normalized.put("assignment_id", rubric.getOrDefault("assignment_id", null));
+            normalized.put("title", rubric.getOrDefault("title", "Rubric Workspace " + workspaceId));
+            normalized.put("description", rubric.getOrDefault("description", "Assignment evaluation rubric"));
+            normalized.put("criteria", normalizedCriteria);
+            return normalized;
+        }
+
+        List<Map<String, Object>> criteria = new ArrayList<>();
+        for (Map.Entry<String, Object> entry : rubric.entrySet()) {
+            if (!(entry.getValue() instanceof Number number)) {
+                continue;
+            }
+            double maxScore = number.doubleValue();
+            String name = entry.getKey();
+            Map<String, Object> criterion = new LinkedHashMap<>();
+            criterion.put("criterion_id", slugify(name));
+            criterion.put("name", name);
+            criterion.put("description", null);
+            criterion.put("value", maxScore);
+            criterion.put("weight", maxScore);
+            criterion.put("scoring_levels", List.of(
+                    Map.of("score", 0.0, "label", "insufficient", "description", "Does not satisfy " + name),
+                    Map.of("score", maxScore, "label", "meets", "description", "Fully satisfies " + name)
+            ));
+            criteria.add(criterion);
+        }
+
+        Map<String, Object> normalized = new LinkedHashMap<>();
+        normalized.put("rubric_id", UUID.randomUUID().toString());
+        normalized.put("assignment_id", null);
+        normalized.put("title", "Rubric Workspace " + workspaceId);
+        normalized.put("description", "Assignment evaluation rubric");
+        normalized.put("criteria", criteria);
+        return normalized;
+    }
+
+    private String slugify(String input) {
+        return input.toLowerCase(Locale.ROOT).trim().replaceAll("\\s+", "_");
     }
 
 
