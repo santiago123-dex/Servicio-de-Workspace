@@ -98,8 +98,8 @@ class SubmissionServiceTest {
 
         SubmissionResponse response = submissionService.submitAssignment(request);
 
-        assertEquals(15, response.Id());
-        assertEquals(8, response.AssignmentId());
+        assertEquals(15, response.id());
+        assertEquals(8, response.assignmentId());
         assertEquals(userId, response.userId());
         verify(submissionRepository).save(any(Submission.class));
     }

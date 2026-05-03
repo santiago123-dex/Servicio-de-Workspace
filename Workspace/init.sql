@@ -49,4 +49,3 @@ CREATE TABLE submission (
         REFERENCES assignment(id) 
         ON DELETE CASCADE
 );
-drop table submission;
