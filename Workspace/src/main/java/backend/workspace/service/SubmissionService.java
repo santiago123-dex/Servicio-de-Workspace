@@ -92,9 +92,12 @@ public class SubmissionService {
 
         result.put("ai", Map.of(
                 "score", request.score(),
-                "feedback", request.feedback()
+                "feedback", request.feedback(),
+                "rubricResults", request.rubricResults() != null ? request.rubricResults() : List.of(),
+                "evaluatedAt", request.evaluatedAt()
         ));
 
+        result.put("aiStatus", "APPROVED");
         submission.setResult(result);
         return SubmissionResponse.fromEntity(submissionRepository.save(submission));
     }
