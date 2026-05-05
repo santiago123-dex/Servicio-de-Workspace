@@ -57,7 +57,7 @@ class WorkspaceMemberServiceTest {
 
     @Test
     void shouldAddMemberWhenCodeExistAndUserIsNotMember() {
-        WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC123", userId);
+        WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC123");
 
         when(workspaceRepository.findByCode("ABC123"))
                 .thenReturn(Optional.of(workspace));
@@ -74,7 +74,7 @@ class WorkspaceMemberServiceTest {
         when(workspaceMemberRepository.save(any(WorkspaceMember.class)))
                 .thenReturn(savedMember);
 
-        WorkspaceMemberResponse response = workspaceMemberService.addMember(request);
+        WorkspaceMemberResponse response = workspaceMemberService.addMember(userId, request);
 
         assertEquals(10, response.id());
         assertEquals(1, response.workspaceId());
@@ -89,20 +89,20 @@ class WorkspaceMemberServiceTest {
 
     @Test
     void shouldThrowWhenWorkspaceCodeDoesNotExist() {
-        WorkspaceMemberRequest request = new WorkspaceMemberRequest("MISSING", userId);
+        WorkspaceMemberRequest request = new WorkspaceMemberRequest("MISSING");
         when(workspaceRepository.findByCode("MISSING")).thenReturn(Optional.empty());
 
-        assertThrows(WorkspaceNotFoundException.class, () -> workspaceMemberService.addMember(request));
+        assertThrows(WorkspaceNotFoundException.class, () -> workspaceMemberService.addMember(userId, request));
         verify(workspaceMemberRepository, never()).save(any(WorkspaceMember.class));
     }
 
     @Test
     void shouldThrowWhenMemberAlreadyExists() {
-        WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC123", userId);
+        WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC123");
         when(workspaceRepository.findByCode("ABC123")).thenReturn(Optional.of(workspace));
         when(workspaceMemberRepository.existsByWorkspaceIdAndUserId(1, userId)).thenReturn(true);
 
-        assertThrows(MemberAlreadyExistException.class, () -> workspaceMemberService.addMember(request));
+        assertThrows(MemberAlreadyExistException.class, () -> workspaceMemberService.addMember(userId, request));
         verify(workspaceMemberRepository, never()).save(any(WorkspaceMember.class));
     }
 

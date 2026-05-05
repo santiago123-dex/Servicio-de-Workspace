@@ -96,7 +96,7 @@ class SubmissionServiceTest {
         when(submissionRepository.existsByAssignmentIdAndUserId(8, userId)).thenReturn(false);
         when(submissionRepository.save(any(Submission.class))).thenReturn(submission);
 
-        SubmissionResponse response = submissionService.submitAssignment(request);
+        SubmissionResponse response = submissionService.submitAssignment(userId, request);
 
         assertEquals(15, response.id());
         assertEquals(8, response.assignmentId());
@@ -115,7 +115,7 @@ class SubmissionServiceTest {
                 .build();
         when(assignmentService.findAssignmentOrThrow(8)).thenReturn(expired);
 
-        assertThrows(AssignmentExpiredException.class, () -> submissionService.submitAssignment(request));
+        assertThrows(AssignmentExpiredException.class, () -> submissionService.submitAssignment(userId, request));
         verify(submissionRepository, never()).save(any(Submission.class));
     }
 
@@ -124,7 +124,7 @@ class SubmissionServiceTest {
         when(assignmentService.findAssignmentOrThrow(8)).thenReturn(assignment);
         when(submissionRepository.existsByAssignmentIdAndUserId(8, userId)).thenReturn(true);
 
-        assertThrows(SubmissionAlreadyExistException.class, () -> submissionService.submitAssignment(request));
+        assertThrows(SubmissionAlreadyExistException.class, () -> submissionService.submitAssignment(userId,request));
         verify(submissionRepository, never()).save(any(Submission.class));
     }
 
