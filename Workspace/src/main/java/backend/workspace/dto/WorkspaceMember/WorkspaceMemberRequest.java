@@ -9,9 +9,6 @@ import java.util.UUID;
 public record WorkspaceMemberRequest(
 
         @NotBlank(message = "El codigo del workspace es obligatorio")
-        String code,
-
-        @NotNull(message = "El userId debe de ser obligatorio")
-        UUID userId
+        String code
 
 ) {}

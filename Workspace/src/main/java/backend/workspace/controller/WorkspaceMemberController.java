@@ -18,8 +18,8 @@ public class WorkspaceMemberController {
     private final WorkspaceMemberService workspaceMemberService;
 
    @PostMapping("/addMember")
-    public ResponseEntity<WorkspaceMemberResponse> addMember(@Valid @RequestBody WorkspaceMemberRequest request){
-        WorkspaceMemberResponse response = workspaceMemberService.addMember(request);
+    public ResponseEntity<WorkspaceMemberResponse> addMember(@RequestHeader("X-User-Id") UUID userId, @Valid @RequestBody WorkspaceMemberRequest request){
+        WorkspaceMemberResponse response = workspaceMemberService.addMember(userId, request);
         return ResponseEntity.ok(response);
    }
 

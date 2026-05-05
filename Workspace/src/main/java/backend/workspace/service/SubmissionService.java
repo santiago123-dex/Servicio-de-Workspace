@@ -38,15 +38,15 @@ public class SubmissionService {
     }
 
     @Transactional
-    public SubmissionResponse submitAssignment(SubmissionRequest request) {
+    public SubmissionResponse submitAssignment(UUID userId, SubmissionRequest request) {
 
         // Evitamos dos consultas y primero declaramos la variable, y luego dependiendo del id lo guardamos en la variable
         Assignment assignment = assignmentService.findAssignmentOrThrow(request.assignmentId());
         validateAssignmentNotExpired(assignment);
-        validateSubmissionNotExists(request.userId(), request.assignmentId());
+        validateSubmissionNotExists(userId, request.assignmentId());
 
         Submission submission = Submission.builder()
-                .userId(request.userId())
+                .userId(userId)
                 .content(request.content())
                 .files(request.files())
                 .build();

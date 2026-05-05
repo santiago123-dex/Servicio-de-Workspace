@@ -24,9 +24,9 @@ public class SubmissionController {
 
     // Endpoint para entregar una tarea por parted del estudiante
     @PostMapping()
-    public ResponseEntity<SubmissionResponse> submitAssignment(@Valid @RequestBody SubmissionRequest request){
+    public ResponseEntity<SubmissionResponse> submitAssignment(@RequestHeader("X-User-Id") UUID userId, @Valid @RequestBody SubmissionRequest request){
 
-        SubmissionResponse response =  submissionService.submitAssignment(request);
+        SubmissionResponse response =  submissionService.submitAssignment(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

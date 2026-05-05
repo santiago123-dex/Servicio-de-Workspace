@@ -40,16 +40,16 @@ public class WorkspaceMemberService {
     }
 
     // Invitar a un usuario a un workspace
-    public WorkspaceMemberResponse addMember(WorkspaceMemberRequest request){
+    public WorkspaceMemberResponse addMember(UUID userId, WorkspaceMemberRequest request){
 
         Workspace workspace = findWorkspaceByCodeOrThrow(request.code());
 
-        if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspace.getId(), request.userId())){
-            throw new MemberAlreadyExistException(request.userId(), workspace.getId());
+        if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspace.getId(), userId)){
+            throw new MemberAlreadyExistException(userId, workspace.getId());
         }
 
         WorkspaceMember member = WorkspaceMember.builder()
-                .userId(request.userId())
+                .userId(userId)
                 .role(WorkspaceMember.Role.MEMBER)
                 .build();
 
