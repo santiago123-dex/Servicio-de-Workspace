@@ -32,6 +32,9 @@ class WorkspaceServiceTest {
     @Mock
     private WorkspaceMemberService workspaceMemberService;
 
+    @Mock
+    private WorkspaceCodeCodec workspaceCodeCodec;
+
     @InjectMocks
     private WorkspaceService workspaceService;
 
@@ -44,7 +47,7 @@ class WorkspaceServiceTest {
                 "Nuevo workspace",
                 "Descripcion de prueba",
                 Workspace.WorkspaceStatus.ARCHIVADO,
-                Map.of("code", "ABC123")
+                new WorkspaceRequest.WorkspaceDataRequest("ABC12345")
         );
 
         workspace = Workspace.builder()
@@ -53,8 +56,12 @@ class WorkspaceServiceTest {
                 .description("Descripcion de prueba")
                 .status(Workspace.WorkspaceStatus.ACTIVO)
                 .ownerUserID(UUID.fromString("00000000-0000-0000-0000-000000000001"))
-                .data(Map.of("code", "ABC123"))
+                .data(Map.of("encodedCode", "QUJDMTIzNDU="))
                 .build();
+
+        when(workspaceCodeCodec.encode("ABC12345")).thenReturn("QUJDMTIzNDU=");
+        when(workspaceCodeCodec.encode("XYZ12345")).thenReturn("WFlaMTIzNDU=");
+        when(workspaceCodeCodec.decode("QUJDMTIzNDU=")).thenReturn("ABC12345");
     }
 
     @Test
@@ -104,7 +111,7 @@ class WorkspaceServiceTest {
                 "Nombre actualizado",
                 "Descripcion actualizada",
                 Workspace.WorkspaceStatus.ARCHIVADO,
-                Map.of("code", "XYZ")
+                new WorkspaceRequest.WorkspaceDataRequest("XYZ12345")
         );
         when(workspaceRepository.findById(1)).thenReturn(Optional.of(workspace));
         when(workspaceRepository.save(any(Workspace.class))).thenReturn(workspace);

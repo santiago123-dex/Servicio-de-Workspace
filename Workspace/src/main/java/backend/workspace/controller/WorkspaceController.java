@@ -1,6 +1,7 @@
 package backend.workspace.controller;
 
 import backend.workspace.dto.Workspace.WorkspaceRequest;
+import backend.workspace.dto.Workspace.WorkspaceCodeResponse;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
 import backend.workspace.service.WorkspaceService;
 import jakarta.validation.Valid;
@@ -60,6 +61,11 @@ public class WorkspaceController {
     @GetMapping("/getWorkspaceById/{id}")
     public ResponseEntity<WorkspaceResponse> getWorkspaceById(@PathVariable Integer id){
         return ResponseEntity.ok(workspaceService.getWorkspaceById(id));
+    }
+
+    @GetMapping("/{id}/invitation-code")
+    public ResponseEntity<WorkspaceCodeResponse> getInvitationCode(@PathVariable Integer id){
+        return ResponseEntity.ok(workspaceService.getInvitationCode(id));
     }
 
     @DeleteMapping("/deleteWorkspace/{id}")

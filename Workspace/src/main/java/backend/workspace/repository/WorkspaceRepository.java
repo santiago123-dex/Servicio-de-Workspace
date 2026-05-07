@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface WorkspaceRepository extends JpaRepository<Workspace, Integer> {
 
-    @Query(value = "select * from workspace w where w.data ->> 'code' = :code", nativeQuery = true)
-    Optional<Workspace> findByCode(@Param("code") String code);
+    @Query(value = "select * from workspace w where w.data ->> 'encodedCode' = :encodedCode", nativeQuery = true)
+    Optional<Workspace> findByEncodedCode(@Param("encodedCode") String encodedCode);
 }
