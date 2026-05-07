@@ -78,8 +78,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- pom.xml -->
-
     </dependencies>
 
     <build>
