@@ -1,6 +1,7 @@
 package backend.workspace.controller;
 
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberRequest;
+import backend.workspace.dto.WorkspaceMember.WorkspaceMemberDetailsResponse;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
 import backend.workspace.service.WorkspaceMemberService;
 import jakarta.validation.Valid;
@@ -26,6 +27,12 @@ public class WorkspaceMemberController {
    @GetMapping("/workspace/{workspaceId}")
     public ResponseEntity<List<WorkspaceMemberResponse>> getMembersByWorkspace(@PathVariable Integer workspaceId){
         List<WorkspaceMemberResponse> response = workspaceMemberService.getMembersByWorkspace(workspaceId);
+        return ResponseEntity.ok(response);
+   }
+
+   @GetMapping("/workspace/{workspaceId}/details")
+    public ResponseEntity<List<WorkspaceMemberDetailsResponse>> getMembersDetailsByWorkspace(@PathVariable Integer workspaceId){
+        List<WorkspaceMemberDetailsResponse> response = workspaceMemberService.getMembersDetailsByWorkspace(workspaceId);
         return ResponseEntity.ok(response);
    }
 

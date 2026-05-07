@@ -1,5 +1,8 @@
 package backend.workspace.service;
 
+import backend.workspace.client.UserServiceClient;
+import backend.workspace.dto.User.UserSummaryResponse;
+import backend.workspace.dto.WorkspaceMember.WorkspaceMemberDetailsResponse;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberRequest;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
 import backend.workspace.entity.Workspace;
@@ -10,7 +13,10 @@ import backend.workspace.exception.WorkspaceMember.MemberNotFoundException;
 import backend.workspace.repository.WorkspaceMemberRepository;
 import backend.workspace.repository.WorkspaceRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -18,10 +24,19 @@ public class WorkspaceMemberService {
 
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final WorkspaceRepository workspaceRepository;
+    private final UserServiceClient userServiceClient;
+    private final WorkspaceCodeCodec workspaceCodeCodec;
 
-    public WorkspaceMemberService(WorkspaceMemberRepository workspaceMemberRepository, WorkspaceRepository workspaceRepository) {
+    public WorkspaceMemberService(
+            WorkspaceMemberRepository workspaceMemberRepository,
+            WorkspaceRepository workspaceRepository,
+            UserServiceClient userServiceClient,
+            WorkspaceCodeCodec workspaceCodeCodec
+    ) {
         this.workspaceMemberRepository = workspaceMemberRepository;
         this.workspaceRepository = workspaceRepository;
+        this.userServiceClient = userServiceClient;
+        this.workspaceCodeCodec = workspaceCodeCodec;
     }
 
     //Agregar como ADMIN al creador de Workspace automaticamente
@@ -77,6 +92,37 @@ public class WorkspaceMemberService {
                 .toList();
     }
 
+    public List<WorkspaceMemberDetailsResponse> getMembersDetailsByWorkspace(Integer workspaceId) {
+        findWorkspaceOrThrow(workspaceId);
+
+        List<WorkspaceMember> members = workspaceMemberRepository.findByWorkspaceId(workspaceId);
+        List<UUID> userIds = members.stream()
+                .map(WorkspaceMember::getUserId)
+                .distinct()
+                .toList();
+
+        Map<UUID, UserSummaryResponse> usersById = new HashMap<>();
+        for (UserSummaryResponse user : userServiceClient.getUserSummaries(userIds)) {
+            usersById.put(user.id(), user);
+        }
+
+        return members.stream()
+                .map(member -> {
+                    UserSummaryResponse user = usersById.get(member.getUserId());
+                    return new WorkspaceMemberDetailsResponse(
+                            member.getId(),
+                            member.getWorkspace().getId(),
+                            member.getUserId(),
+                            member.getRole(),
+                            user != null ? user.firstName() : null,
+                            user != null ? user.lastName() : null,
+                            user != null ? user.fullName() : null,
+                            user != null ? user.avatarUrl() : null
+                    );
+                })
+                .toList();
+    }
+
     //Obtener todos los workspaces de un usuario
     public List<WorkspaceMemberResponse> getWorkspacesByUser(UUID userId) {
         return workspaceMemberRepository.findByUserId(userId)
@@ -122,7 +168,8 @@ public class WorkspaceMemberService {
     }
 
     private Workspace findWorkspaceByCodeOrThrow(String code) {
-        return workspaceRepository.findByCode(code)
+        String encodedCode = workspaceCodeCodec.encode(code);
+        return workspaceRepository.findByEncodedCode(encodedCode)
                 .orElseThrow(() -> new WorkspaceNotFoundException("No existe un workspace con el codigo: " + code));
     }
 
