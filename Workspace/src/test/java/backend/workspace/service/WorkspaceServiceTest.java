@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -24,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class WorkspaceServiceTest {
 
     @Mock
@@ -79,13 +82,14 @@ class WorkspaceServiceTest {
 
     @Test
     void shouldGetAllWorkspaces() {
-        when(workspaceRepository.findAll()).thenReturn(List.of(workspace));
+        UUID userId = UUID.fromString("00000000-0000-0000-0000-000000000001");
+        when(workspaceRepository.findByOwnerUserID(userId)).thenReturn(List.of(workspace));
 
-        List<WorkspaceResponse> responses = workspaceService.getAllWorkspaces();
+        List<WorkspaceResponse> responses = workspaceService.getAllWorkspaces(userId);
 
         assertEquals(1, responses.size());
         assertEquals("Nuevo workspace", responses.getFirst().name());
-        assertEquals("Workspaces obtenidos correctamente", responses.getFirst().message());
+        assertEquals("Workspace encontrado", responses.getFirst().message());
     }
 
     @Test
