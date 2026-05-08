@@ -21,8 +21,8 @@ public class UserServiceClient {
 
     public UserServiceClient(
             RestClient.Builder restClientBuilder,
-            @Value("${user.service.url:http://user-service:8080}") String userServiceUrl,
-            @Value("${user.service.batch-summary-endpoint:/internal/users/batch-summary}") String batchSummaryEndpoint
+            @Value("${user.service.url}") String userServiceUrl,
+            @Value("${user.service.batch-summary-endpoint}") String batchSummaryEndpoint
     ) {
         this.restClient = restClientBuilder.baseUrl(userServiceUrl).build();
         this.batchSummaryEndpoint = batchSummaryEndpoint;
