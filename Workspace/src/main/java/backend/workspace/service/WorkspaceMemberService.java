@@ -123,14 +123,6 @@ public class WorkspaceMemberService {
                 .toList();
     }
 
-    //Obtener todos los workspaces de un usuario
-    public List<WorkspaceMemberResponse> getWorkspacesByUser(UUID userId) {
-        return workspaceMemberRepository.findByUserId(userId)
-                .stream()
-                .map(member -> WorkspaceMemberResponse.fromEntity(member, "Workspace encontrado"))
-                .toList();
-    }
-
     /*
     //Actualizar el role de un miembro
     public WorkspaceMemberResponse updateMemberRole(Integer memberId, WorkspaceMember.Role newRole) {

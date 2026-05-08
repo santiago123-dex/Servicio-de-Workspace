@@ -3,6 +3,7 @@ package backend.workspace.controller;
 import backend.workspace.dto.Workspace.WorkspaceRequest;
 import backend.workspace.dto.Workspace.WorkspaceCodeResponse;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
+import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
 import backend.workspace.service.WorkspaceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,9 +53,8 @@ public class WorkspaceController {
     }
 
     @GetMapping("/getAllWorkspaces")
-    //Lista de objetos de workspade
-    public ResponseEntity<List<WorkspaceResponse>> getAllWorkspaces(){
-        List<WorkspaceResponse> response = workspaceService.getAllWorkspaces();
+    public ResponseEntity<List<WorkspaceResponse>> getAllWorkspaces(@RequestHeader("X-User-Id") UUID userId){
+        List<WorkspaceResponse> response = workspaceService.getAllWorkspaces(userId);
         return ResponseEntity.ok(response);
     }
 

@@ -36,11 +36,6 @@ public class WorkspaceMemberController {
         return ResponseEntity.ok(response);
    }
 
-   @GetMapping("/user")
-    public ResponseEntity<List<WorkspaceMemberResponse>> getWorkspacesByUser(@RequestHeader("X-User-Id") UUID userId){
-        List<WorkspaceMemberResponse> response = workspaceMemberService.getWorkspacesByUser(userId);
-        return ResponseEntity.ok(response);
-   }
 /* METODO DE CAMBIAR DE ROL POR SI ACASO
    @PatchMapping("/{memberId}/role")
     public ResponseEntity<WorkspaceMemberResponse> updateMemberRoles(@PathVariable Integer memberId, @RequestBody WorkspaceMember.Role role){
