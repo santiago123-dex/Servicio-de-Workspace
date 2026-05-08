@@ -122,6 +122,14 @@ public class SubmissionService {
                 .toList();
     }
 
+    // Devuelve submissions de un usuario dentro de un workspace específico
+    public List<SubmissionResponse> getSubmissionsByUserAndWorkspace(UUID userId, Integer workspaceId) {
+        return submissionRepository.findByUserIdAndAssignmentWorkspaceId(userId, workspaceId)
+                .stream()
+                .map(SubmissionResponse::fromEntity)
+                .toList();
+    }
+
     //Devuelve la lista de tareas dependiendo del id
     public SubmissionResponse getSubmissionById(Integer id) {
 

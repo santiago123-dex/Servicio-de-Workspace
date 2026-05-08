@@ -13,6 +13,7 @@ import backend.workspace.exception.WorkspaceMember.MemberNotFoundException;
 import backend.workspace.exception.UserService.UserServiceUnavailableException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -111,6 +112,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_GATEWAY)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, WebRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                "La operación viola una restricción de datos. Verifica duplicados o referencias inválidas.",
+                getPath(request)
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .body(errorResponse);
     }
 

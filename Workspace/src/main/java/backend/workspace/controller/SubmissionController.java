@@ -47,6 +47,15 @@ public class SubmissionController {
 
     }
 
+    @GetMapping("/workspace/{workspaceId}/user/{userId}")
+    public ResponseEntity<List<SubmissionResponse>> getSubmissionByUserAndWorkspace(
+            @PathVariable Integer workspaceId,
+            @PathVariable UUID userId
+    ) {
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsByUserAndWorkspace(userId, workspaceId);
+        return ResponseEntity.ok(submissions);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<SubmissionResponse> getSubmissionById(@PathVariable Integer id){
 

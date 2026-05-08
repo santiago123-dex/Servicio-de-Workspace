@@ -47,5 +47,7 @@ CREATE TABLE submission (
     CONSTRAINT fk_submission_assignment 
         FOREIGN KEY (assignment_id) 
         REFERENCES assignment(id) 
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT uk_submission_assignment_user
+        UNIQUE (assignment_id, user_id)
 );
