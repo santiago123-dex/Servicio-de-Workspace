@@ -24,9 +24,9 @@ public class SubmissionController {
 
     // Endpoint para entregar una tarea por parted del estudiante
     @PostMapping()
-    public ResponseEntity<SubmissionResponse> submitAssignment(@Valid @RequestBody SubmissionRequest request){
+    public ResponseEntity<SubmissionResponse> submitAssignment(@RequestHeader("X-User-Id") UUID userId, @Valid @RequestBody SubmissionRequest request){
 
-        SubmissionResponse response =  submissionService.submitAssignment(request);
+        SubmissionResponse response =  submissionService.submitAssignment(userId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -45,6 +45,15 @@ public class SubmissionController {
         List<SubmissionResponse> submissions = submissionService.getSubmissionByUser(userId);
         return ResponseEntity.ok(submissions);
 
+    }
+
+    @GetMapping("/workspace/{workspaceId}/user/{userId}")
+    public ResponseEntity<List<SubmissionResponse>> getSubmissionByUserAndWorkspace(
+            @PathVariable Integer workspaceId,
+            @PathVariable UUID userId
+    ) {
+        List<SubmissionResponse> submissions = submissionService.getSubmissionsByUserAndWorkspace(userId, workspaceId);
+        return ResponseEntity.ok(submissions);
     }
 
     @GetMapping("/{id}")

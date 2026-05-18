@@ -10,8 +10,11 @@ import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
 import backend.workspace.exception.WorkspaceMember.AdminRequiredException;
 import backend.workspace.exception.WorkspaceMember.MemberAlreadyExistException;
 import backend.workspace.exception.WorkspaceMember.MemberNotFoundException;
+import backend.workspace.exception.UserService.UserServiceUnavailableException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -98,6 +101,34 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
+    @ExceptionHandler(UserServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleUserServiceUnavailable(UserServiceUnavailableException ex, WebRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.BAD_GATEWAY.value(),
+                "Bad Gateway",
+                ex.getMessage(),
+                getPath(request)
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex, WebRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                "La operación viola una restricción de datos. Verifica duplicados o referencias inválidas.",
+                getPath(request)
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(errorResponse);
+    }
+
      @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericExeception(Exception ex, WebRequest request){
         log.error("Unhandled exception on path {}", getPath(request), ex);
@@ -150,9 +181,23 @@ public class GlobalExceptionHandler {
 
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 
-     }
+	     }
 
-     //Exception De Assignment not found
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.BAD_REQUEST.value(),
+                "JSON invalido. Verifica formato y valores permitidos, especialmente en campos enum como status.",
+                "Bad Request",
+                getPath(request)
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorResponse);
+    }
+
+	     //Exception De Assignment not found
 
     @ExceptionHandler(AssignmentNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAssignmentNotFound(AssignmentNotFoundException ex, WebRequest request) {
