@@ -31,35 +31,35 @@ public class WorkspaceMemberService {
             WorkspaceMemberRepository workspaceMemberRepository,
             WorkspaceRepository workspaceRepository,
             UserServiceClient userServiceClient,
-            WorkspaceCodeCodec workspaceCodeCodec
-    ) {
+            WorkspaceCodeCodec workspaceCodeCodec) {
         this.workspaceMemberRepository = workspaceMemberRepository;
         this.workspaceRepository = workspaceRepository;
         this.userServiceClient = userServiceClient;
         this.workspaceCodeCodec = workspaceCodeCodec;
     }
 
-    //Agregar como ADMIN al creador de Workspace automaticamente
-    public void addOwnerAsAdmin(Workspace workspace, UUID ownerId){
+    // Agregar como ADMIN al creador de Workspace automaticamente
+    public void addOwnerAsAdmin(Workspace workspace, UUID ownerId) {
         WorkspaceMember owner = WorkspaceMember.builder()
                 .userId(ownerId)
                 .role(WorkspaceMember.Role.ADMIN)
                 .build();
 
-        // con el set guardamos el objeto de workspace en owner y luego hacemos el add al arrayList
+        // con el set guardamos el objeto de workspace en owner y luego hacemos el add
+        // al arrayList
         owner.setWorkspace(workspace);
-        //Traemos los datos de la lista y luego agregamos el nuevo
+        // Traemos los datos de la lista y luego agregamos el nuevo
         workspace.getMembers().add(owner);
 
         workspaceMemberRepository.save(owner);
     }
 
     // Invitar a un usuario a un workspace
-    public WorkspaceMemberResponse addMember(UUID userId, WorkspaceMemberRequest request){
+    public WorkspaceMemberResponse addMember(UUID userId, WorkspaceMemberRequest request) {
 
         Workspace workspace = findWorkspaceByCodeOrThrow(request.code());
 
-        if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspace.getId(), userId)){
+        if (workspaceMemberRepository.existsByWorkspaceIdAndUserId(workspace.getId(), userId)) {
             throw new MemberAlreadyExistException(userId, workspace.getId());
         }
 
@@ -68,8 +68,8 @@ public class WorkspaceMemberService {
                 .role(WorkspaceMember.Role.MEMBER)
                 .build();
 
-
-        // con el set guardamos el objeto de workspace en workspaceMember y luego hacemos el add al arrayList
+        // con el set guardamos el objeto de workspace en workspaceMember y luego
+        // hacemos el add al arrayList
         member.setWorkspace(workspace);
         workspace.getMembers().add(member);
 
@@ -77,17 +77,26 @@ public class WorkspaceMemberService {
         return WorkspaceMemberResponse.fromEntity(saved, "Miembro agregado correctamente");
     }
 
+    public List<WorkspaceMemberResponse> getMembersByUser(UUID userId) {
+        return workspaceMemberRepository.findByUserId(userId)
+                .stream()
+                .map(member -> WorkspaceMemberResponse.fromEntity(member, "Miembro encontrado"))
+                .toList();
+    }
+
     // Obtener todos los miembros del workspace
-    public List<WorkspaceMemberResponse> getMembersByWorkspace(Integer workspaceId){
+    public List<WorkspaceMemberResponse> getMembersByWorkspace(Integer workspaceId) {
         // Comprueba en la tabla de workspace si existe el workspace
         findWorkspaceOrThrow(workspaceId);
 
         return workspaceMemberRepository.findByWorkspaceId(workspaceId)
                 // Transforma la lista de WorkspaceMember a WorkspaceMemberResponse
-                // Stream convierte la lista en un stream para que pueda ejecutar diferentes procesos
+                // Stream convierte la lista en un stream para que pueda ejecutar diferentes
+                // procesos
                 .stream()
-                // Recorre la lista de WorkspaceMember y por cada miembro lo convierte en un WorkspaceMemberResponse
-                .map( member -> WorkspaceMemberResponse.fromEntity(member, "Miembro encontrado") )
+                // Recorre la lista de WorkspaceMember y por cada miembro lo convierte en un
+                // WorkspaceMemberResponse
+                .map(member -> WorkspaceMemberResponse.fromEntity(member, "Miembro encontrado"))
                 // toList convierte el stream en una lista
                 .toList();
     }
@@ -117,39 +126,40 @@ public class WorkspaceMemberService {
                             user != null ? user.firstName() : null,
                             user != null ? user.lastName() : null,
                             user != null ? user.fullName() : null,
-                            user != null ? user.avatarUrl() : null
-                    );
+                            user != null ? user.avatarUrl() : null);
                 })
                 .toList();
     }
 
     /*
-    //Actualizar el role de un miembro
-    public WorkspaceMemberResponse updateMemberRole(Integer memberId, WorkspaceMember.Role newRole) {
+     * //Actualizar el role de un miembro
+     * public WorkspaceMemberResponse updateMemberRole(Integer memberId,
+     * WorkspaceMember.Role newRole) {
+     * WorkspaceMember workspaceMember = findWorkspaceMemberById(memberId);
+     * workspaceMember.setRole(newRole);
+     * workspaceMemberRepository.save(workspaceMember);
+     * 
+     * return WorkspaceMemberResponse.fromEntity(workspaceMember,
+     * "Rol actualizado correctamente");
+     * }
+     */
+
+    // Eliminar un miembro del workspace
+    public void deleteMember(Integer memberId) {
+        // Obtenemos los datos del miembro, con la comprobacion de que exista
         WorkspaceMember workspaceMember = findWorkspaceMemberById(memberId);
-        workspaceMember.setRole(newRole);
-        workspaceMemberRepository.save(workspaceMember);
 
-        return WorkspaceMemberResponse.fromEntity(workspaceMember,  "Rol actualizado correctamente");
-    }
-    */
-
-    //Eliminar un miembro del workspace
-    public void deleteMember(Integer memberId){
-        //Obtenemos los datos del miembro, con la comprobacion de que exista
-        WorkspaceMember workspaceMember = findWorkspaceMemberById(memberId);
-
-        //traemos el workspace del miembro
+        // traemos el workspace del miembro
         Workspace workspace = workspaceMember.getWorkspace();
-        //Lo eliminamos de la lista
+        // Lo eliminamos de la lista
         workspace.getMembers().remove(workspaceMember);
-        //Lo eliminamos de la base de datos
+        // Lo eliminamos de la base de datos
         workspaceMemberRepository.delete(workspaceMember);
     }
 
     // Metodo privados
 
-    private WorkspaceMember findWorkspaceMemberById(Integer id){
+    private WorkspaceMember findWorkspaceMemberById(Integer id) {
         return workspaceMemberRepository.findById(id)
                 .orElseThrow(() -> new MemberNotFoundException(id));
     }

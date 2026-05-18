@@ -12,6 +12,8 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     //Busca todos los miembros de un workspace
     List<WorkspaceMember> findByWorkspaceId(Integer workspaceId);
 
+    List<WorkspaceMember> findByUserId(UUID userId);
+
     // Verifica si existe un miembro en un workspace
     boolean existsByWorkspaceIdAndUserId(Integer workspaceId, UUID userId);
 
