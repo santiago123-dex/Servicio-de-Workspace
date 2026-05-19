@@ -23,9 +23,11 @@ public record WorkspaceRequest(
     WorkspaceDataRequest data
 ) {
     public record WorkspaceDataRequest(
-            @NotBlank(message = "El code es obligatorio")
             @Size(min = 8, max = 8, message = "El code debe tener exactamente 8 caracteres")
             @Pattern(regexp = "^[A-Za-z0-9]{8}$", message = "El code solo puede contener letras y numeros")
-            String code
+            String code,
+
+            @Pattern(regexp = "^#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$", message = "El color debe ser un hexadecimal valido")
+            String accentColor
     ) {}
 }
