@@ -16,6 +16,9 @@ public interface SubmissionRepository extends JpaRepository<Submission, Integer>
     List<Submission> findByUserId(UUID userId);
 
     List<Submission> findByUserIdAndAssignmentWorkspaceId(UUID userId, Integer workspaceId);
+
+    List<Submission> findByAssignmentWorkspaceId(Integer workspaceId);
+
     // verificamos si existe al menos un registro de submission donde haya un assignment y un usuario
     boolean existsByAssignmentIdAndUserId(Integer assignmentId, UUID userId);
 

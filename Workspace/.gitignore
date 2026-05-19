@@ -36,3 +36,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+seed_payloads.json
+seed_test_data.sql
