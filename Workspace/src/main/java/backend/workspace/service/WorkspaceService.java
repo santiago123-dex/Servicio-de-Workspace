@@ -3,6 +3,7 @@ package backend.workspace.service;
 import backend.workspace.dto.Workspace.WorkspaceCodeResponse;
 import backend.workspace.dto.Workspace.WorkspaceRequest;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
+import backend.workspace.dto.Workspace.WorkspaceRoleResponse;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
 import backend.workspace.entity.Workspace;
 import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
@@ -43,7 +44,7 @@ public class WorkspaceService {
     }
 
     //Obtener todos los workspaces de un usuario
-    public List<WorkspaceResponse> getAllWorkspaces(UUID userId) {
+    public List<WorkspaceResponse> getOwnWorkspaces(UUID userId) {
         return workspaceRepository.findByOwnerUserID(userId)
                 .stream()
                 .map(workspace -> WorkspaceResponse.fromEntity(workspace, "Workspace encontrado"))
@@ -53,6 +54,13 @@ public class WorkspaceService {
     public WorkspaceResponse getWorkspaceById(Integer id) {
         Workspace workspace = findWorkspaceById(id);
         return WorkspaceResponse.fromEntity(workspace, "Workspace obtenido correctamente");
+    }
+
+    public List<WorkspaceRoleResponse> getAllWorkspaces(UUID userId) {
+        return workspaceRepository.getAllWorkspaces(userId)
+                .stream()
+                .map(member -> WorkspaceRoleResponse.fromEntity(member, "Espacios totales", userId))
+                .toList();
     }
 
     public WorkspaceResponse updateWorkspace(Integer id, WorkspaceRequest workspaceRequest) {

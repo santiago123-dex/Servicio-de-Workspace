@@ -24,5 +24,4 @@ public interface SubmissionRepository extends JpaRepository<Submission, Integer>
 
     // Elimina todas las submissions de un assignment específico
     void deleteByAssignmentId(Integer assignmentId);
-
 }

@@ -19,4 +19,15 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Integer> {
 
     //Busca todos los workspaces de un usuario
     List<Workspace> findByOwnerUserID(UUID userId);
+
+
+    // Trae los workspaces en los que el user es admin o es miembro
+    @Query(
+            value = """
+                    SELECT w.* FROM workspace_member wm
+                    JOIN workspace w ON w.id = wm.workspace_id
+                    WHERE wm.user_id = :userId
+                    """, nativeQuery = true
+    )
+    List<Workspace> getAllWorkspaces(@Param("userId") UUID userId);
 }

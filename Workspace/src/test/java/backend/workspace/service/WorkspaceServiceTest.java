@@ -2,6 +2,7 @@ package backend.workspace.service;
 
 import backend.workspace.dto.Workspace.WorkspaceRequest;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
+import backend.workspace.dto.Workspace.WorkspaceRoleResponse;
 import backend.workspace.entity.Workspace;
 import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
 import backend.workspace.repository.WorkspaceRepository;
@@ -85,7 +86,7 @@ class WorkspaceServiceTest {
         UUID userId = UUID.fromString("00000000-0000-0000-0000-000000000001");
         when(workspaceRepository.findByOwnerUserID(userId)).thenReturn(List.of(workspace));
 
-        List<WorkspaceResponse> responses = workspaceService.getAllWorkspaces(userId);
+        List<WorkspaceRoleResponse> responses = workspaceService.getAllWorkspaces(userId);
 
         assertEquals(1, responses.size());
         assertEquals("Nuevo workspace", responses.getFirst().name());
