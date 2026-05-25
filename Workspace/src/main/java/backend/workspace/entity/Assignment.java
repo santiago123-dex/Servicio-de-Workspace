@@ -14,6 +14,7 @@ import org.hibernate.type.SqlTypes;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Entity
@@ -55,7 +56,18 @@ public class Assignment {
         // Recibe el valor del json y lo convierte en mayuscula para dar el response
         @JsonCreator
         public static AssignmentStatus fromString(String value){
-            return AssignmentStatus.valueOf(value.toUpperCase());
+            if (value == null || value.trim().isEmpty()) {
+                throw new IllegalArgumentException("El status de la tarea es obligatorio");
+            }
+
+            String normalized = value.trim().toUpperCase(Locale.ROOT);
+
+            // Alias de compatibilidad con clientes que envian ARCHIVADO
+            if ("ARCHIVADO".equals(normalized)) {
+                return CERRADO;
+            }
+
+            return AssignmentStatus.valueOf(normalized);
         }
     }
 

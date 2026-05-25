@@ -1,5 +1,8 @@
 package backend.workspace.service;
 
+import backend.workspace.client.UserServiceClient;
+import backend.workspace.dto.User.UserSummaryResponse;
+import backend.workspace.dto.WorkspaceMember.WorkspaceMemberDetailsResponse;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberRequest;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
 import backend.workspace.entity.Workspace;
@@ -37,6 +40,12 @@ class WorkspaceMemberServiceTest {
     @Mock
     private WorkspaceRepository workspaceRepository;
 
+    @Mock
+    private UserServiceClient userServiceClient;
+
+    @Mock
+    private WorkspaceCodeCodec workspaceCodeCodec;
+
     @InjectMocks
     private WorkspaceMemberService workspaceMemberService;
 
@@ -57,9 +66,10 @@ class WorkspaceMemberServiceTest {
 
     @Test
     void shouldAddMemberWhenCodeExistAndUserIsNotMember() {
-        WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC123", userId);
+        WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC12345");
 
-        when(workspaceRepository.findByCode("ABC123"))
+        when(workspaceCodeCodec.encode("ABC12345")).thenReturn("QUJDMTIzNDU=");
+        when(workspaceRepository.findByEncodedCode("QUJDMTIzNDU="))
                 .thenReturn(Optional.of(workspace));
         when(workspaceMemberRepository.existsByWorkspaceIdAndUserId(1, userId))
                 .thenReturn(false);
@@ -74,7 +84,7 @@ class WorkspaceMemberServiceTest {
         when(workspaceMemberRepository.save(any(WorkspaceMember.class)))
                 .thenReturn(savedMember);
 
-        WorkspaceMemberResponse response = workspaceMemberService.addMember(request);
+        WorkspaceMemberResponse response = workspaceMemberService.addMember(userId, request);
 
         assertEquals(10, response.id());
         assertEquals(1, response.workspaceId());
@@ -82,27 +92,29 @@ class WorkspaceMemberServiceTest {
         assertEquals(WorkspaceMember.Role.MEMBER, response.role());
         assertEquals(1, workspace.getMembers().size());
 
-        verify(workspaceRepository).findByCode("ABC123");
+        verify(workspaceRepository).findByEncodedCode("QUJDMTIzNDU=");
         verify(workspaceMemberRepository).existsByWorkspaceIdAndUserId(1, userId);
         verify(workspaceMemberRepository).save(any(WorkspaceMember.class));
     }
 
     @Test
     void shouldThrowWhenWorkspaceCodeDoesNotExist() {
-        WorkspaceMemberRequest request = new WorkspaceMemberRequest("MISSING", userId);
-        when(workspaceRepository.findByCode("MISSING")).thenReturn(Optional.empty());
+        WorkspaceMemberRequest request = new WorkspaceMemberRequest("MISS1234");
+        when(workspaceCodeCodec.encode("MISS1234")).thenReturn("TUlTUzEyMzQ=");
+        when(workspaceRepository.findByEncodedCode("TUlTUzEyMzQ=")).thenReturn(Optional.empty());
 
-        assertThrows(WorkspaceNotFoundException.class, () -> workspaceMemberService.addMember(request));
+        assertThrows(WorkspaceNotFoundException.class, () -> workspaceMemberService.addMember(userId, request));
         verify(workspaceMemberRepository, never()).save(any(WorkspaceMember.class));
     }
 
     @Test
     void shouldThrowWhenMemberAlreadyExists() {
-        WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC123", userId);
-        when(workspaceRepository.findByCode("ABC123")).thenReturn(Optional.of(workspace));
+        WorkspaceMemberRequest request = new WorkspaceMemberRequest("ABC12345");
+        when(workspaceCodeCodec.encode("ABC12345")).thenReturn("QUJDMTIzNDU=");
+        when(workspaceRepository.findByEncodedCode("QUJDMTIzNDU=")).thenReturn(Optional.of(workspace));
         when(workspaceMemberRepository.existsByWorkspaceIdAndUserId(1, userId)).thenReturn(true);
 
-        assertThrows(MemberAlreadyExistException.class, () -> workspaceMemberService.addMember(request));
+        assertThrows(MemberAlreadyExistException.class, () -> workspaceMemberService.addMember(userId, request));
         verify(workspaceMemberRepository, never()).save(any(WorkspaceMember.class));
     }
 
@@ -150,6 +162,39 @@ class WorkspaceMemberServiceTest {
 
         assertEquals(0, workspace.getMembers().size());
         verify(workspaceMemberRepository).delete(member);
+    }
+
+    @Test
+    void shouldReturnMembersDetailsByWorkspace() {
+        UUID secondUserId = UUID.randomUUID();
+
+        WorkspaceMember firstMember = WorkspaceMember.builder()
+                .id(20)
+                .workspace(workspace)
+                .userId(userId)
+                .role(WorkspaceMember.Role.ADMIN)
+                .build();
+
+        WorkspaceMember secondMember = WorkspaceMember.builder()
+                .id(21)
+                .workspace(workspace)
+                .userId(secondUserId)
+                .role(WorkspaceMember.Role.MEMBER)
+                .build();
+
+        when(workspaceRepository.findById(1)).thenReturn(Optional.of(workspace));
+        when(workspaceMemberRepository.findByWorkspaceId(1)).thenReturn(List.of(firstMember, secondMember));
+        when(userServiceClient.getUserSummaries(List.of(userId, secondUserId))).thenReturn(List.of(
+                new UserSummaryResponse(userId, "John", "Doe", "John Doe", "https://cdn/john.png"),
+                new UserSummaryResponse(secondUserId, "Jane", "Smith", "Jane Smith", "https://cdn/jane.png")
+        ));
+
+        List<WorkspaceMemberDetailsResponse> response = workspaceMemberService.getMembersDetailsByWorkspace(1);
+
+        assertEquals(2, response.size());
+        assertEquals("John Doe", response.get(0).fullName());
+        assertEquals("https://cdn/jane.png", response.get(1).avatarUrl());
+        verify(userServiceClient).getUserSummaries(List.of(userId, secondUserId));
     }
 
     @Test

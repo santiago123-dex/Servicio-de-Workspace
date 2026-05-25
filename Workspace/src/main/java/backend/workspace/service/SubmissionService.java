@@ -38,15 +38,15 @@ public class SubmissionService {
     }
 
     @Transactional
-    public SubmissionResponse submitAssignment(SubmissionRequest request) {
+    public SubmissionResponse submitAssignment(UUID userId, SubmissionRequest request) {
 
         // Evitamos dos consultas y primero declaramos la variable, y luego dependiendo del id lo guardamos en la variable
         Assignment assignment = assignmentService.findAssignmentOrThrow(request.assignmentId());
         validateAssignmentNotExpired(assignment);
-        validateSubmissionNotExists(request.userId(), request.assignmentId());
+        validateSubmissionNotExists(userId, request.assignmentId());
 
         Submission submission = Submission.builder()
-                .userId(request.userId())
+                .userId(userId)
                 .content(request.content())
                 .files(request.files())
                 .build();
@@ -92,9 +92,12 @@ public class SubmissionService {
 
         result.put("ai", Map.of(
                 "score", request.score(),
-                "feedback", request.feedback()
+                "feedback", request.feedback(),
+                "rubricResults", request.rubricResults() != null ? request.rubricResults() : List.of(),
+                "evaluatedAt", request.evaluatedAt()
         ));
 
+        result.put("aiStatus", "APPROVED");
         submission.setResult(result);
         return SubmissionResponse.fromEntity(submissionRepository.save(submission));
     }
@@ -114,6 +117,14 @@ public class SubmissionService {
     public List<SubmissionResponse> getSubmissionByUser(UUID userId) {
 
         return submissionRepository.findByUserId(userId)
+                .stream()
+                .map(SubmissionResponse::fromEntity)
+                .toList();
+    }
+
+    // Devuelve submissions de un usuario dentro de un workspace específico
+    public List<SubmissionResponse> getSubmissionsByUserAndWorkspace(UUID userId, Integer workspaceId) {
+        return submissionRepository.findByUserIdAndAssignmentWorkspaceId(userId, workspaceId)
                 .stream()
                 .map(SubmissionResponse::fromEntity)
                 .toList();

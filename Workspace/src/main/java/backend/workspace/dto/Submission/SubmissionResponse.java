@@ -8,8 +8,8 @@ import java.util.UUID;
 
 public record SubmissionResponse(
 
-        Integer Id,
-        Integer AssignmentId,
+        Integer id,
+        Integer assignmentId,
         UUID userId,
         OffsetDateTime createdAt,
         Map<String, Object> content,

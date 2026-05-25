@@ -1,0 +1,62 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: workspace-service
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      USER_SERVICE_URL: ${USER_SERVICE_URL}
+      USER_SERVICE_BATCH_SUMMARY_ENDPOINT: ${USER_SERVICE_BATCH_SUMMARY_ENDPOINT}
+      TZ: America/Bogota
+    ports:
+      - "8083:8080"
+    networks:
+      - workspace_network
+      - agora-network
+
+  postgres:
+    image: postgres:18-alpine
+    container_name: postgres_workspace
+    restart: unless-stopped
+    
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: America/Bogota
+    
+    ports:
+      - "5435:5432"
+    
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
+    networks:
+      - workspace_network
+
+volumes:
+  postgres_data:
+    name: workspace_postgres_data
+
+networks:
+  workspace_network:
+    name: workspace_network
+
+  agora-network:
+    external: true
+    name: agora-network

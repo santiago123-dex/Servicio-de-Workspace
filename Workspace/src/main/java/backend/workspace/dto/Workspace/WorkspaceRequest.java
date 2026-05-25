@@ -1,9 +1,10 @@
 package backend.workspace.dto.Workspace;
 
 import backend.workspace.entity.Workspace;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.util.Map;
 
 // Se usa en vez de lombok para que los datos sean inmutables
 public record WorkspaceRequest(
@@ -18,5 +19,13 @@ public record WorkspaceRequest(
 
     Workspace.WorkspaceStatus status,
 
-    Map<String, Object> data
-) {}
+    @Valid
+    WorkspaceDataRequest data
+) {
+    public record WorkspaceDataRequest(
+            @NotBlank(message = "El code es obligatorio")
+            @Size(min = 8, max = 8, message = "El code debe tener exactamente 8 caracteres")
+            @Pattern(regexp = "^[A-Za-z0-9]{8}$", message = "El code solo puede contener letras y numeros")
+            String code
+    ) {}
+}

@@ -37,6 +37,5 @@ build/
 ### VS Code ###
 .vscode/
 
-### Docker ###
-docker-compose.yml
-docker-compose*.yml
+seed_payloads.json
+seed_test_data.sql

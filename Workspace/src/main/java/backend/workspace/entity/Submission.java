@@ -18,7 +18,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "submission")
+@Table(
+        name = "submission",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_submission_assignment_user", columnNames = {"assignment_id", "user_id"})
+        }
+)
 public class Submission {
 
     @Id

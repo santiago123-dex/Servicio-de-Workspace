@@ -11,7 +11,7 @@ public record AssignmentResponse(
     Integer workspaceId,
     String name,
     String description,
-    OffsetDateTime dueData,
+    OffsetDateTime dueDate,
     Assignment.AssignmentStatus status,
     Map<String, Object> rubric,
     Map<String, Object> settings,
