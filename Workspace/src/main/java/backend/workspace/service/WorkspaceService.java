@@ -92,7 +92,7 @@ public class WorkspaceService {
                 .name(request.name())
                 .description(request.description())
                 .status(Workspace.WorkspaceStatus.ACTIVO)
-                .data(buildEncodedCodeData(request.data().code()))
+                .data(buildWorkspaceData(requireInvitationCode(request.data()), request.data().accentColor(), null))
                 .ownerUserID(currenteUserId)
                 .build();
     }
@@ -108,13 +108,36 @@ public class WorkspaceService {
         if (workspaceRequest.status() != null) {
             workspace.setStatus(workspaceRequest.status());
         }
-        workspace.setData(buildEncodedCodeData(workspaceRequest.data().code()));
+
+        WorkspaceRequest.WorkspaceDataRequest requestData = workspaceRequest.data();
+        String code = requestData != null ? requestData.code() : null;
+        String accentColor = requestData != null ? requestData.accentColor() : null;
+        workspace.setData(buildWorkspaceData(code, accentColor, workspace.getData()));
     }
 
-    private Map<String, Object> buildEncodedCodeData(String code) {
+    private Map<String, Object> buildWorkspaceData(
+            String code,
+            String accentColor,
+            Map<String, Object> currentData
+    ) {
         Map<String, Object> data = new HashMap<>();
-        data.put(ENCODED_CODE_KEY, workspaceCodeCodec.encode(code));
+        if (currentData != null) {
+            data.putAll(currentData);
+        }
+        if (code != null && !code.isBlank()) {
+            data.put(ENCODED_CODE_KEY, workspaceCodeCodec.encode(code));
+        }
+        if (accentColor != null && !accentColor.isBlank()) {
+            data.put("accentColor", accentColor);
+        }
         return data;
+    }
+
+    private String requireInvitationCode(WorkspaceRequest.WorkspaceDataRequest data) {
+        if (data == null || data.code() == null || data.code().isBlank()) {
+            throw new WorkspaceNotFoundException("El workspace debe tener codigo configurado");
+        }
+        return data.code();
     }
 
     private String extractEncodedCode(Workspace workspace) {
