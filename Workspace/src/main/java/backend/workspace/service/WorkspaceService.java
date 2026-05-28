@@ -84,7 +84,7 @@ public class WorkspaceService {
                 .name(request.name())
                 .description(request.description())
                 .status(Workspace.WorkspaceStatus.ACTIVO)
-                .data(buildEncodedCodeData(request.data().code()))
+                .data(buildEncodedCodeData(request.data()))
                 .ownerUserID(currenteUserId)
                 .build();
     }
@@ -100,12 +100,16 @@ public class WorkspaceService {
         if (workspaceRequest.status() != null) {
             workspace.setStatus(workspaceRequest.status());
         }
-        workspace.setData(buildEncodedCodeData(workspaceRequest.data().code()));
+        workspace.setData(buildEncodedCodeData(workspaceRequest.data()));
     }
 
-    private Map<String, Object> buildEncodedCodeData(String code) {
+    private Map<String, Object> buildEncodedCodeData(WorkspaceRequest.WorkspaceDataRequest dataRequest) {
         Map<String, Object> data = new HashMap<>();
-        data.put(ENCODED_CODE_KEY, workspaceCodeCodec.encode(code));
+        data.put(ENCODED_CODE_KEY, workspaceCodeCodec.encode(dataRequest.code()));
+        String accentColor = dataRequest.accentColor();
+        if (accentColor != null && !accentColor.isBlank()) {
+            data.put("accentColor", accentColor);
+        }
         return data;
     }
 

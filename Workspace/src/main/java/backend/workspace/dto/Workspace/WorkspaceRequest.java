@@ -26,6 +26,8 @@ public record WorkspaceRequest(
             @NotBlank(message = "El code es obligatorio")
             @Size(min = 8, max = 8, message = "El code debe tener exactamente 8 caracteres")
             @Pattern(regexp = "^[A-Za-z0-9]{8}$", message = "El code solo puede contener letras y numeros")
-            String code
+            String code,
+
+            String accentColor
     ) {}
 }
