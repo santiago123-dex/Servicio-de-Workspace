@@ -51,7 +51,7 @@ class WorkspaceServiceTest {
                 "Nuevo workspace",
                 "Descripcion de prueba",
                 Workspace.WorkspaceStatus.ARCHIVADO,
-                new WorkspaceRequest.WorkspaceDataRequest("ABC12345", "#2563EB")
+                new WorkspaceRequest.WorkspaceDataRequest("ABC12345", null)
         );
 
         workspace = Workspace.builder()
@@ -117,7 +117,7 @@ class WorkspaceServiceTest {
                 "Nombre actualizado",
                 "Descripcion actualizada",
                 Workspace.WorkspaceStatus.ARCHIVADO,
-                new WorkspaceRequest.WorkspaceDataRequest("XYZ12345", "#EC4899")
+                new WorkspaceRequest.WorkspaceDataRequest("XYZ12345", null)
         );
         when(workspaceRepository.findById(1)).thenReturn(Optional.of(workspace));
         when(workspaceRepository.save(any(Workspace.class))).thenReturn(workspace);

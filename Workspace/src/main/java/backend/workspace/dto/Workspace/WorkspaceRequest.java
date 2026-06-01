@@ -27,7 +27,6 @@ public record WorkspaceRequest(
             @Pattern(regexp = "^[A-Za-z0-9]{8}$", message = "El code solo puede contener letras y numeros")
             String code,
 
-            @Pattern(regexp = "^#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$", message = "El color debe ser un hexadecimal valido")
             String accentColor
     ) {}
 }

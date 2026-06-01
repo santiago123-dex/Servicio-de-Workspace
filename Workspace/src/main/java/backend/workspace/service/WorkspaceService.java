@@ -92,7 +92,7 @@ public class WorkspaceService {
                 .name(request.name())
                 .description(request.description())
                 .status(Workspace.WorkspaceStatus.ACTIVO)
-                .data(buildWorkspaceData(requireInvitationCode(request.data()), request.data().accentColor(), null))
+                .data(buildEncodedCodeData(request.data()))
                 .ownerUserID(currenteUserId)
                 .build();
     }
@@ -108,25 +108,13 @@ public class WorkspaceService {
         if (workspaceRequest.status() != null) {
             workspace.setStatus(workspaceRequest.status());
         }
-
-        WorkspaceRequest.WorkspaceDataRequest requestData = workspaceRequest.data();
-        String code = requestData != null ? requestData.code() : null;
-        String accentColor = requestData != null ? requestData.accentColor() : null;
-        workspace.setData(buildWorkspaceData(code, accentColor, workspace.getData()));
+        workspace.setData(buildEncodedCodeData(workspaceRequest.data()));
     }
 
-    private Map<String, Object> buildWorkspaceData(
-            String code,
-            String accentColor,
-            Map<String, Object> currentData
-    ) {
+    private Map<String, Object> buildEncodedCodeData(WorkspaceRequest.WorkspaceDataRequest dataRequest) {
         Map<String, Object> data = new HashMap<>();
-        if (currentData != null) {
-            data.putAll(currentData);
-        }
-        if (code != null && !code.isBlank()) {
-            data.put(ENCODED_CODE_KEY, workspaceCodeCodec.encode(code));
-        }
+        data.put(ENCODED_CODE_KEY, workspaceCodeCodec.encode(dataRequest.code()));
+        String accentColor = dataRequest.accentColor();
         if (accentColor != null && !accentColor.isBlank()) {
             data.put("accentColor", accentColor);
         }
