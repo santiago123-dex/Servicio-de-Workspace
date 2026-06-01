@@ -1,0 +1,602 @@
+{
+  "info": {
+    "_postman_id": "c47ab5ee-d266-45fa-ad3e-390ad69afbd5",
+    "name": "Servicio de Workspace",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44568751",
+    "_collection_link": "https://go.postman.co/collection/44568751-c47ab5ee-d266-45fa-ad3e-390ad69afbd5?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Workspace",
+      "item": [
+        {
+          "name": "Test String",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/plain"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"ping\":\"workspace\"}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/test-string",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "test-string"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Test JSON",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ping\": \"workspace\",\n  \"ok\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/test-json",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "test-json"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Workspace",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Workspace de prueba10\",\n  \"description\": \"Coleccion Postman\",\n  \"status\": \"ACTIVO\",\n  \"data\": {\n    \"course\": \"Backend\",\n    \"semester\": \"2026-1\",\n    \"code\" : \"ABC123\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Workspaces",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/getAllWorkspaces",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "getAllWorkspaces"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Workspace By Id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "text"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/getWorkspaceById/11",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "getWorkspaceById",
+                "11"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Workspace",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Workspace actualizado\",\n  \"description\": \"Workspace actualizado desde Postman\",\n  \"status\": \"ACTIVO\",\n  \"data\": {\n    \"course\": \"Backend\",\n    \"semester\": \"2026-1\",\n    \"updated\": true\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/updateWorkspace/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "updateWorkspace",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Workspace",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/deleteWorkspace/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "deleteWorkspace",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Workspace Member",
+      "item": [
+        {
+          "name": "Add Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\" : \"ABC123\",\n  \"userId\": \"{{memberUserId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/member/addMember",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "member",
+                "addMember"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Members By Workspace",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/member/workspace/{{workspaceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "member",
+                "workspace",
+                "{{workspaceId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Workspaces By User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/member/user/{{memberUserId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "member",
+                "user",
+                "{{memberUserId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Member",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/member/{{memberId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "member",
+                "{{memberId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Assignment",
+      "item": [
+        {
+          "name": "Create Assignment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workspaceId\": 3,\n  \"name\": \"Tarea API\",\n  \"description\": \"Tarea creada desde la coleccion\",\n  \"dueDate\": \"2099-12-31T23:59:00Z\",\n  \"rubric\": {\n    \"clarity\": 50,\n    \"logic\": 50\n  },\n  \"settings\": {\n    \"attempts\": 1,\n    \"allowLate\": false\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/assignments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "assignments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Assignments By Workspace",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/assignments/workspace/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "assignments",
+                "workspace",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Assignments By Workspace And Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/assignments/workspace/3/status/{{assignmentStatus}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "assignments",
+                "workspace",
+                "3",
+                "status",
+                "{{assignmentStatus}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Assignment By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/assignments/{{assignmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "assignments",
+                "{{assignmentId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Assignment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workspaceId\": 1,\n  \"name\": \"Tarea API actualizada\",\n  \"description\": \"Tarea actualizada desde Postman\",\n  \"dueDate\": \"2099-12-31T23:59:00Z\",\n  \"rubric\": {\n    \"clarity\": 40,\n    \"logic\": 60\n  },\n  \"settings\": {\n    \"attempts\": 2,\n    \"allowLate\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/assignments/{{assignmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "assignments",
+                "{{assignmentId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Assignment",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/assignments/{{assignmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "assignments",
+                "{{assignmentId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Submission",
+      "item": [
+        {
+          "name": "Create Submission",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignmentId\": 3,\n  \"userId\": \"{{userId}}\",\n  \"content\": {\n    \"answer\": \"Entrega de prueba\"\n  },\n  \"files\": {\n    \"repository\": \"https://github.com/example/repo\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/submission",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "submission"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Submissions By Assignment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/submission/assignment/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "submission",
+                "assignment",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Submissions By User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/submission/user/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "submission",
+                "user",
+                "{{userId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Submission By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/submission/{{submissionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "submission",
+                "{{submissionId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Submission",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignmentId\": 1,\n  \"userId\": \"{{userId}}\",\n  \"content\": {\n    \"answer\": \"Entrega actualizada\"\n  },\n  \"files\": {\n    \"repository\": \"https://github.com/example/repo-updated\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/submission/{{submissionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "submission",
+                "{{submissionId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Submission",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/workspaces/submission/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "workspaces",
+                "submission",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "workspaceId",
+      "value": "1"
+    },
+    {
+      "key": "memberId",
+      "value": "1"
+    },
+    {
+      "key": "assignmentId",
+      "value": "1"
+    },
+    {
+      "key": "submissionId",
+      "value": "1"
+    },
+    {
+      "key": "userId",
+      "value": "00000000-0000-0000-0000-000000000001"
+    },
+    {
+      "key": "memberUserId",
+      "value": "00000000-0000-0000-0000-000000000002"
+    },
+    {
+      "key": "assignmentStatus",
+      "value": "PUBLICADO"
+    }
+  ]
+}

@@ -2,6 +2,7 @@ package backend.workspace.service;
 
 import backend.workspace.dto.Workspace.WorkspaceRequest;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
+import backend.workspace.dto.Workspace.WorkspaceRoleResponse;
 import backend.workspace.entity.Workspace;
 import backend.workspace.exception.Workspace.WorkspaceNotFoundException;
 import backend.workspace.repository.WorkspaceRepository;
@@ -59,7 +60,7 @@ class WorkspaceServiceTest {
                 .description("Descripcion de prueba")
                 .status(Workspace.WorkspaceStatus.ACTIVO)
                 .ownerUserID(UUID.fromString("00000000-0000-0000-0000-000000000001"))
-                .data(Map.of("encodedCode", "QUJDMTIzNDU="))
+                .data(Map.of("encodedCode", "QUJDMTIzNDU=", "accentColor", "#2563EB"))
                 .build();
 
         when(workspaceCodeCodec.encode("ABC12345")).thenReturn("QUJDMTIzNDU=");
@@ -76,6 +77,7 @@ class WorkspaceServiceTest {
         assertEquals(1, response.id());
         assertEquals("Nuevo workspace", response.name());
         assertEquals(Workspace.WorkspaceStatus.ACTIVO, response.status());
+        assertEquals("#2563EB", response.data().get("accentColor"));
         verify(workspaceRepository).save(any(Workspace.class));
         verify(workspaceMemberService).addOwnerAsAdmin(workspace, workspace.getOwnerUserID());
     }
@@ -85,7 +87,7 @@ class WorkspaceServiceTest {
         UUID userId = UUID.fromString("00000000-0000-0000-0000-000000000001");
         when(workspaceRepository.findByOwnerUserID(userId)).thenReturn(List.of(workspace));
 
-        List<WorkspaceResponse> responses = workspaceService.getAllWorkspaces(userId);
+        List<WorkspaceRoleResponse> responses = workspaceService.getAllWorkspaces(userId);
 
         assertEquals(1, responses.size());
         assertEquals("Nuevo workspace", responses.getFirst().name());
@@ -125,6 +127,7 @@ class WorkspaceServiceTest {
         assertEquals("Nombre actualizado", response.name());
         assertEquals("Descripcion actualizada", response.description());
         assertEquals(Workspace.WorkspaceStatus.ARCHIVADO, response.status());
+        assertEquals("#EC4899", response.data().get("accentColor"));
         verify(workspaceRepository).save(workspace);
     }
 

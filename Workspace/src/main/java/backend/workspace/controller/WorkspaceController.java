@@ -3,6 +3,7 @@ package backend.workspace.controller;
 import backend.workspace.dto.Workspace.WorkspaceRequest;
 import backend.workspace.dto.Workspace.WorkspaceCodeResponse;
 import backend.workspace.dto.Workspace.WorkspaceResponse;
+import backend.workspace.dto.Workspace.WorkspaceRoleResponse;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
 import backend.workspace.service.WorkspaceService;
 import jakarta.validation.Valid;
@@ -52,15 +53,20 @@ public class WorkspaceController {
             return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/getAllWorkspaces")
+    @GetMapping("/getOwnWorkspaces")
     public ResponseEntity<List<WorkspaceResponse>> getAllWorkspaces(@RequestHeader("X-User-Id") UUID userId){
-        List<WorkspaceResponse> response = workspaceService.getAllWorkspaces(userId);
+        List<WorkspaceResponse> response = workspaceService.getOwnWorkspaces(userId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/getWorkspaceById/{id}")
     public ResponseEntity<WorkspaceResponse> getWorkspaceById(@PathVariable Integer id){
         return ResponseEntity.ok(workspaceService.getWorkspaceById(id));
+    }
+
+    @GetMapping("/getAllWorkspaces")
+    public ResponseEntity<List<WorkspaceRoleResponse>> getAllWorkspacesByUserId(@RequestHeader("X-User-Id") UUID userId){
+        return ResponseEntity.ok(workspaceService.getAllWorkspaces(userId));
     }
 
     @GetMapping("/{id}/invitation-code")
