@@ -4,18 +4,16 @@ import backend.workspace.dto.Report.BasicWorkspaceReportResponse;
 import backend.workspace.dto.Report.PerformanceDataResponse;
 import backend.workspace.entity.Assignment;
 import backend.workspace.entity.Submission;
+import backend.workspace.entity.WorkspaceMember;
 import backend.workspace.exception.Assignment.AssignmentNotFoundException;
 import backend.workspace.repository.AssignmentRepository;
 import backend.workspace.repository.SubmissionRepository;
+import backend.workspace.repository.WorkspaceMemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalDouble;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,15 +24,18 @@ public class ReportService {
     private final WorkspaceService workspaceService;
     private final AssignmentRepository assignmentRepository;
     private final SubmissionRepository submissionRepository;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
 
     public ReportService(
             WorkspaceService workspaceService,
             AssignmentRepository assignmentRepository,
-            SubmissionRepository submissionRepository
+            SubmissionRepository submissionRepository,
+            WorkspaceMemberRepository workspaceMemberRepository
     ) {
         this.workspaceService = workspaceService;
         this.assignmentRepository = assignmentRepository;
         this.submissionRepository = submissionRepository;
+        this.workspaceMemberRepository = workspaceMemberRepository;
     }
 
     public BasicWorkspaceReportResponse getBasicWorkspaceReport(Integer workspaceId) {
@@ -43,11 +44,20 @@ public class ReportService {
         List<Assignment> assignments = assignmentRepository.findByWorkspaceId(workspaceId);
         List<Submission> submissions = submissionRepository.findByAssignmentWorkspaceId(workspaceId);
 
+        Set<UUID> adminUserIds = workspaceMemberRepository.findByWorkspaceId(workspaceId)
+                .stream()
+                .filter(m -> m.getRole() == WorkspaceMember.Role.ADMIN)
+                .map(WorkspaceMember::getUserId)
+                .collect(Collectors.toSet());
+
         int gradedSubmissions = 0;
         int pendingSubmissions = 0;
         double scoreSum = 0.0d;
 
         for (Submission submission : submissions) {
+            if (adminUserIds.contains(submission.getUserId())) {
+                continue;
+            }
             OptionalDouble score = extractPreferredScore(submission.getResult());
             if (score.isPresent()) {
                 gradedSubmissions++;
@@ -103,12 +113,22 @@ public class ReportService {
             );
         }
 
+        // Excluir entregas de admins (los admins no son estudiantes)
+        Set<UUID> adminUserIds = workspaceMemberRepository.findByWorkspaceId(workspaceId)
+                .stream()
+                .filter(m -> m.getRole() == WorkspaceMember.Role.ADMIN)
+                .map(WorkspaceMember::getUserId)
+                .collect(Collectors.toSet());
+
         Map<UUID, StudentAccumulator> studentAccumulators = new HashMap<>();
 
         int gradedSubmissions = 0;
         double scoreSum = 0.0d;
 
         for (Submission submission : submissions) {
+            if (adminUserIds.contains(submission.getUserId())) {
+                continue;
+            }
             AssignmentAccumulator assignmentAccumulator = assignmentAccumulators.get(submission.getAssignment().getId());
             if (assignmentAccumulator == null) {
                 continue;
