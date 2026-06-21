@@ -84,27 +84,34 @@ public class WorkspaceMemberService {
                 .toList();
     }
 
-    // Obtener todos los miembros del workspace
+    // Obtener todos los miembros del workspace (con filtro opcional por rol)
     public List<WorkspaceMemberResponse> getMembersByWorkspace(Integer workspaceId) {
+        return getMembersByWorkspace(workspaceId, null);
+    }
+
+    public List<WorkspaceMemberResponse> getMembersByWorkspace(Integer workspaceId, WorkspaceMember.Role role) {
         // Comprueba en la tabla de workspace si existe el workspace
         findWorkspaceOrThrow(workspaceId);
 
-        return workspaceMemberRepository.findByWorkspaceId(workspaceId)
-                // Transforma la lista de WorkspaceMember a WorkspaceMemberResponse
-                // Stream convierte la lista en un stream para que pueda ejecutar diferentes
-                // procesos
-                .stream()
-                // Recorre la lista de WorkspaceMember y por cada miembro lo convierte en un
-                // WorkspaceMemberResponse
+        List<WorkspaceMember> members = role != null
+                ? workspaceMemberRepository.findByWorkspaceIdAndRole(workspaceId, role)
+                : workspaceMemberRepository.findByWorkspaceId(workspaceId);
+
+        return members.stream()
                 .map(member -> WorkspaceMemberResponse.fromEntity(member, "Miembro encontrado"))
-                // toList convierte el stream en una lista
                 .toList();
     }
 
     public List<WorkspaceMemberDetailsResponse> getMembersDetailsByWorkspace(Integer workspaceId) {
+        return getMembersDetailsByWorkspace(workspaceId, null);
+    }
+
+    public List<WorkspaceMemberDetailsResponse> getMembersDetailsByWorkspace(Integer workspaceId, WorkspaceMember.Role role) {
         findWorkspaceOrThrow(workspaceId);
 
-        List<WorkspaceMember> members = workspaceMemberRepository.findByWorkspaceId(workspaceId);
+        List<WorkspaceMember> members = role != null
+                ? workspaceMemberRepository.findByWorkspaceIdAndRole(workspaceId, role)
+                : workspaceMemberRepository.findByWorkspaceId(workspaceId);
         List<UUID> userIds = members.stream()
                 .map(WorkspaceMember::getUserId)
                 .distinct()
@@ -129,6 +136,19 @@ public class WorkspaceMemberService {
                             user != null ? user.avatarUrl() : null);
                 })
                 .toList();
+    }
+
+    public long countMembersByWorkspace(Integer workspaceId) {
+        return countMembersByWorkspace(workspaceId, null);
+    }
+
+    public long countMembersByWorkspace(Integer workspaceId, WorkspaceMember.Role role) {
+        findWorkspaceOrThrow(workspaceId);
+
+        if (role != null) {
+            return workspaceMemberRepository.countByWorkspaceIdAndRole(workspaceId, role);
+        }
+        return workspaceMemberRepository.countByWorkspaceId(workspaceId);
     }
 
     /*

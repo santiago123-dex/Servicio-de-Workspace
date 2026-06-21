@@ -3,6 +3,7 @@ package backend.workspace.controller;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberRequest;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberDetailsResponse;
 import backend.workspace.dto.WorkspaceMember.WorkspaceMemberResponse;
+import backend.workspace.entity.WorkspaceMember;
 import backend.workspace.service.WorkspaceMemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -27,17 +29,28 @@ public class WorkspaceMemberController {
     }
 
     @GetMapping("/workspace/{workspaceId}")
-    public ResponseEntity<List<WorkspaceMemberResponse>> getMembersByWorkspace(@PathVariable Integer workspaceId) {
-        List<WorkspaceMemberResponse> response = workspaceMemberService.getMembersByWorkspace(workspaceId);
+    public ResponseEntity<List<WorkspaceMemberResponse>> getMembersByWorkspace(
+            @PathVariable Integer workspaceId,
+            @RequestParam(required = false) WorkspaceMember.Role role) {
+        List<WorkspaceMemberResponse> response = workspaceMemberService.getMembersByWorkspace(workspaceId, role);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/workspace/{workspaceId}/details")
     public ResponseEntity<List<WorkspaceMemberDetailsResponse>> getMembersDetailsByWorkspace(
-            @PathVariable Integer workspaceId) {
+            @PathVariable Integer workspaceId,
+            @RequestParam(required = false) WorkspaceMember.Role role) {
         List<WorkspaceMemberDetailsResponse> response = workspaceMemberService
-                .getMembersDetailsByWorkspace(workspaceId);
+                .getMembersDetailsByWorkspace(workspaceId, role);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/workspace/{workspaceId}/count")
+    public ResponseEntity<Map<String, Long>> countMembersByWorkspace(
+            @PathVariable Integer workspaceId,
+            @RequestParam(required = false) WorkspaceMember.Role role) {
+        long count = workspaceMemberService.countMembersByWorkspace(workspaceId, role);
+        return ResponseEntity.ok(Map.of("count", count));
     }
 
     @GetMapping("/user")
